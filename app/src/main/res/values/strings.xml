@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ThePlayer</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+	<string name="action_location">Location</string>
+    <string name="action_sort">Sort</string>
+	<string name="action_exit">Exit</string>
+	<string name="space_available">Used: 0.0GB Available: 0.0GB #Tracks: 0</string>
+	<string name="play">Play</string>
+	<string name="previous">Previous</string>
+	<string name="rewind">Rewind</string>
+	<string name="forward">Forward</string>
+	<string name="next">Next</string>
+	<string name="song_title">Song Title</string>
+	<string name="zero">0:00</string>
+	<string name="artist">Artist</string>
+	<string name="album_title">Album Title</string>
+    <string name="artist_text">artist</string>
+
+</resources>

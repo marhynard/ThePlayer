@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <item name="TAG_FILE_ID" type="id">1</item>
+    <item name="TAG_FILE_LINK_ID" type="id">1</item>
+    <item name="TAG_FILE_LOCATION" type="id">1</item>
+    <item name="TAG_PLAYLIST_POSITION" type="id">1</item>
+    <item name="TAG_FILE_POSITION" type="id">1</item>
+</resources>
