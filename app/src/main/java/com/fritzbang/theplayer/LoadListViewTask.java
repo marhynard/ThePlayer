@@ -36,9 +36,9 @@ public class LoadListViewTask extends AsyncTask<String, Integer, Integer> {
     private ArrayList<TrackBean> trackBeans = new ArrayList<>();
     DBAdapter dbAdapter = null;
     private int sortType = PlaylistArrayAdapter.TITLE_SORT;
-
+    String directory = "";
     public LoadListViewTask(Context context, PlaylistArrayAdapter adapter,
-                            TextView textViewSpace) {
+                            TextView textViewSpace,String directory) {
         mDialog = new ProgressDialog(context);
         mAdapter = adapter;
         this.context = context;
@@ -46,6 +46,7 @@ public class LoadListViewTask extends AsyncTask<String, Integer, Integer> {
         // Do your dialog stuff here
         mDialog.setMessage("Loading Files");
         mDialog.show();
+        this.directory = directory;
     }
 
     @Override
@@ -82,9 +83,7 @@ public class LoadListViewTask extends AsyncTask<String, Integer, Integer> {
     public void onProgressUpdate(Integer... ints) {
         mDialog.setProgress(ints[0]);
         mDialog.setMessage("Loading " + numFiles + "/" + listSize);
-        textViewSpace.setText("Used: " + ThePlayerActivity.formatSize(fileSize)
-                + " Available: " + ThePlayerActivity.formatSize(availableSpace)
-                + " #Tracks: " + numFiles);
+        textViewSpace.setText(ThePlayerActivity.updateSpaceAvailable(new File(directory)));
     }
 
     public void onPostExecute(Integer result) {

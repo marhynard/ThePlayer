@@ -18,5 +18,6 @@
 	<string name="artist">Artist</string>
 	<string name="album_title">Album Title</string>
     <string name="artist_text">artist</string>
+    <string name="delete">Delete</string>
 
 </resources>

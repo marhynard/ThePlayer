@@ -6,6 +6,7 @@ import java.util.Comparator;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
 	public TrackBean currentTrackInfo;
     boolean isAscending = false;
     int sortType = -1;
+    private SparseBooleanArray mSelectedItemsIds;
 
     public void updateStatus(int trackToPlay,int status,int position) {
         trackBeans.get(trackToPlay).status = status;
@@ -33,6 +35,29 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
     public void setSortType(int sortType) {
         this.sortType = sortType;
     }
+
+    public void removeSelection() {
+        mSelectedItemsIds = new SparseBooleanArray();
+        notifyDataSetChanged();
+    }
+
+    public void toggleSelection(int position) {
+        selectView(position,!mSelectedItemsIds.get(position));
+    }
+
+    private void selectView(int position, boolean value) {
+        if(value){
+            mSelectedItemsIds.put(position,value);
+        }else{
+            mSelectedItemsIds.delete(position);
+        }
+        notifyDataSetChanged();
+    }
+
+    public SparseBooleanArray getSelectedIds() {
+        return mSelectedItemsIds;
+    }
+
 
     static class ViewHolder {
 		public TextView songTitle;
@@ -45,9 +70,10 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
 		super(context, R.layout.playlist_list_entry, trackBeans);
 		this.context = context;
 		this.trackBeans = trackBeans;
+        mSelectedItemsIds = new SparseBooleanArray();
 	}
-
-	public void addTrack(String songTitle, String fileLocation,
+    
+    public void addTrack(String songTitle, String fileLocation,
 			String albumTitle, String artist) {
 		trackBeans.add(new TrackBean(songTitle, fileLocation, artist,
 				albumTitle,0,0));

@@ -24,9 +24,12 @@ import android.os.IBinder;
 import android.os.Message;
 import android.text.InputType;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -96,7 +99,6 @@ public class ThePlayerActivity extends Activity {
 	// TODO modify so it saves the state when the app is left
 	// TODO need to save the state of the playlist
     // TODO save state when rotating
-    // TODO figure out how to preserve viewlist when shutdown
     // TODO shutdown after certain amount of time idle(make modifiable)
 
     // TODO fix the currentSongListIndex after deleting
@@ -105,9 +107,10 @@ public class ThePlayerActivity extends Activity {
 
     // TODO add the buttons to the lockscreen area
 
-    // TODO if the item is longClicked change the view to checked
     // TODO add popup for restart when a track is playing and want to start over.(double click to restart?)
 	// TODO change icons for the app
+
+    // TODO add album art
 
 	// TODO remove the debugging messages
 
@@ -332,7 +335,7 @@ public class ThePlayerActivity extends Activity {
 		plaAdapter = new PlaylistArrayAdapter(this, trackBeans);
         plaAdapter.setSortType(sortType);
         loadListViewTask = new LoadListViewTask(context, plaAdapter,
-				textViewSpace);
+				textViewSpace,directoryLocation);
         loadListViewTask.setSortType(sortType);
 		// This is for debug only
 		// directoryLocation =
@@ -343,7 +346,7 @@ public class ThePlayerActivity extends Activity {
 		playlistView.setAdapter(plaAdapter);
 
 		playlistView.setClickable(true);
-		playlistView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);// MULTIPLE
+		playlistView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);//.CHOICE_MODE_SINGLE);// MULTIPLE
 
 		playlistView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -374,33 +377,66 @@ public class ThePlayerActivity extends Activity {
 			}
 
 		});
-		playlistView.setOnItemLongClickListener(new OnItemLongClickListener() {
+//		playlistView.setOnItemLongClickListener(new OnItemLongClickListener() {
+//
+//			public boolean onItemLongClick(AdapterView<?> parent, View view,
+//					int position, long id) {
+//				Log.d(DEBUG_TAG, "Item is long clicked:" + id + " " + position);
+//				showPodcastAlert(position);
+//				return true;
+//			}
+//
+//		});
 
-			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Log.d(DEBUG_TAG, "Item is long clicked:" + id + " " + position);
-				showPodcastAlert(position);
-				return true;
-			}
+        playlistView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                final int checkedCount = playlistView.getCheckedItemCount();
+                mode.setTitle(checkedCount + " Selected");
+                plaAdapter.toggleSelection(position);
+            }
 
-		});
-		// playlistView.setOnItemSelectedListener(new OnItemSelectedListener() {
-		//
-		// @Override
-		// public void onItemSelected(AdapterView<?> parent, View view,
-		// int position, long id) {
-		// Log.d(DEBUG_TAG, "In selection area");
-		// view.setBackgroundColor(Color.CYAN);
-		//
-		// }
-		//
-		// @Override
-		// public void onNothingSelected(AdapterView<?> parent) {
-		// // view.setBackgroundColor(Color.WHITE);
-		//
-		// }
-		//
-		// });
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.activity_main,menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch(item.getItemId()){
+                    case R.id.delete:
+                        SparseBooleanArray selected = plaAdapter.getSelectedIds();
+                        for(int i = (selected.size() -1); i >= 0; i--){
+                            if(selected.valueAt(i)){
+                                TrackBean selectedItem = plaAdapter.getItem(selected.keyAt(i));
+                                plaAdapter.remove(selectedItem);
+
+                                File file = new File(selectedItem.location);
+                                //File dir = file.getParentFile();
+                                new DeleteTrackTask(context,textViewSpace).execute(file);
+                                //updateSpaceAvailable(dir);
+
+                            }
+                        }
+                        mode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                plaAdapter.removeSelection();
+            }
+        });
+        textViewSpace.setText(updateSpaceAvailable(new File(directoryLocation)));
 	}
 
 	// plays or pauses the track being played
@@ -589,8 +625,8 @@ public class ThePlayerActivity extends Activity {
 						File file = new File(trackToDelete.location);
 						File dir = file.getParentFile();
 
-						new DeleteTrackTask(context).execute(file);
-						updateSpaceAvailable(dir);
+						new DeleteTrackTask(context,textViewSpace).execute(file);
+						//updateSpaceAvailable(dir);
 
 					}
 				});
@@ -606,7 +642,8 @@ public class ThePlayerActivity extends Activity {
 
 	}
 
-	protected void updateSpaceAvailable(File dir) {
+	public static String updateSpaceAvailable(File dir) {
+        String returnString = "";
 		long availableSpace = dir.getUsableSpace();
 		long numFiles = dir.list(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
@@ -619,11 +656,10 @@ public class ThePlayerActivity extends Activity {
 			}
 		}).length;
 		long fileSize = ThePlayerActivity.getDirectorySize(dir);
-		// File directory = new File(directoryString);
-		Log.d(DEBUG_TAG, "Used: " + formatSize(fileSize) + " Available: "
-				+ formatSize(availableSpace) + " #Tracks: " + numFiles);
-		textViewSpace.setText("Used: " + formatSize(fileSize) + " Available: "
-				+ formatSize(availableSpace) + " #Tracks: " + numFiles);
+		returnString =  "Used: " + formatSize(fileSize) + " Available: "
+                + formatSize(availableSpace) + " #Tracks: " + numFiles;
+		Log.d(DEBUG_TAG,returnString);
+		return returnString;
 	}
 
 	@Override
@@ -659,7 +695,6 @@ public class ThePlayerActivity extends Activity {
 
     private void refreshDatabase() {
         Log.d(DEBUG_TAG,"refreshing Database");
-        //TODO add loadingTrackTask
         if (loadingTrackTask != null)
             loadListViewTask.cancel(true);
         loadingTrackTask = new LoadingTrackTask(context,textViewSpace);
