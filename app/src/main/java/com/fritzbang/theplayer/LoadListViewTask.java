@@ -83,7 +83,7 @@ public class LoadListViewTask extends AsyncTask<String, Integer, Integer> {
     public void onProgressUpdate(Integer... ints) {
         mDialog.setProgress(ints[0]);
         mDialog.setMessage("Loading " + numFiles + "/" + listSize);
-        textViewSpace.setText(ThePlayerActivity.updateSpaceAvailable(new File(directory)));
+        //textViewSpace.setText(ThePlayerActivity.updateSpaceAvailable(new File(directory)));
     }
 
     public void onPostExecute(Integer result) {

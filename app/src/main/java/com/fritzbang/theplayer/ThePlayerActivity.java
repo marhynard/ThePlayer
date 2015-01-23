@@ -85,6 +85,8 @@ public class ThePlayerActivity extends Activity {
 
     // TODO fix the coloring for the played schemes
     // TODO fix the track position when a different track is selected
+    // TODO add a progress dialog to the delete tasks
+    // TODO change color to highight selection
 
     // TODO update the list view when a refresh is done
     // TODO preserve the sort state
