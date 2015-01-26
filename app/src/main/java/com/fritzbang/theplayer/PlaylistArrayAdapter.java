@@ -6,6 +6,7 @@ import java.util.Comparator;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,7 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
     public static final  int ALBUM_SORT = 1;
     public static final  int ARTIST_SORT = 2;
     public static final  int TRACK_SORT = 3;
-	// private static final String DEBUG_TAG = "PlaylistArrayAdapter";
+	 private static final String DEBUG_TAG = "PlaylistArrayAdapter";
 	private final Activity context;
 	private ArrayList<TrackBean> trackBeans = new ArrayList<TrackBean>();
 	public TrackBean currentTrackInfo;
@@ -171,29 +172,61 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
 			viewHolder.artist = (TextView) rowView.findViewById(R.id.artist);
 
 			rowView.setTag(viewHolder);
-		}
+		}else{
+            if(mSelectedItemsIds.get(position,false)){
+                LayoutInflater inflater = context.getLayoutInflater();
+                rowView = inflater.inflate(R.layout.playlist_list_entry_checkbox, null);
+                ViewHolder viewHolder = new ViewHolder();
+                viewHolder.songTitle = (TextView) rowView
+                        .findViewById(R.id.song_title);
+                viewHolder.albumTitle = (TextView) rowView
+                        .findViewById(R.id.album_title);
+                viewHolder.artist = (TextView) rowView.findViewById(R.id.artist);
+
+                rowView.setTag(viewHolder);
+            }else{
+                LayoutInflater inflater = context.getLayoutInflater();
+                rowView = inflater.inflate(R.layout.playlist_list_entry, null);
+                ViewHolder viewHolder = new ViewHolder();
+                viewHolder.songTitle = (TextView) rowView
+                        .findViewById(R.id.song_title);
+                viewHolder.albumTitle = (TextView) rowView
+                        .findViewById(R.id.album_title);
+                viewHolder.artist = (TextView) rowView.findViewById(R.id.artist);
+
+                rowView.setTag(viewHolder);
+            }
+        }
+
 		// rowView.setBackgroundColor(color.white);
 		ViewHolder holder = (ViewHolder) rowView.getTag();
+        if(mSelectedItemsIds.get(position,false)){
+
+            rowView.setBackgroundColor(Color.MAGENTA);
+        }else{
+            switch(trackBeans.get(position).status) {
+                case TrackBean.TRACK_STATUS_CURRENT:
+                    rowView.setBackgroundColor(Color.BLUE);
+                    break;
+                case TrackBean.TRACK_STATUS_FINISHED:
+                    rowView.setBackgroundColor(Color.DKGRAY);
+                    break;
+                case TrackBean.TRACK_STATUS_PARTIAL:
+                    rowView.setBackgroundColor(Color.GRAY);
+                    break;
+            case TrackBean.TRACK_STATUS_UNPLAYED:
+                rowView.setBackgroundColor(Color.WHITE);
+                break;
+            }
+        }
+
 
 		holder.songTitle.setText(trackBeans.get(position).trackTitle);
 		holder.songTitle.setTag(R.id.TAG_FILE_LOCATION,trackBeans.get(position).location);
 		holder.albumTitle.setText(trackBeans.get(position).album);
 		holder.artist.setText(trackBeans.get(position).artist);
 
-        switch(trackBeans.get(position).status) {
-            case TrackBean.TRACK_STATUS_CURRENT:
-                rowView.setBackgroundColor(Color.BLUE);
-                break;
-            case TrackBean.TRACK_STATUS_FINISHED:
-                rowView.setBackgroundColor(Color.DKGRAY);
-                break;
-            case TrackBean.TRACK_STATUS_PARTIAL:
-                rowView.setBackgroundColor(Color.GRAY);
-                break;
-            case TrackBean.TRACK_STATUS_UNPLAYED:
-                rowView.setBackgroundColor(Color.WHITE);
-                break;
-        }
+
 
 		return rowView;
 	}

@@ -12,10 +12,11 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-    <ImageView
+    <CheckBox
         android:layout_width="55dp"
         android:layout_height="55dp"
-        android:id="@+id/album_image" />
+        android:id="@+id/checkBox"
+        android:checked="true" />
 
     <RelativeLayout
             android:layout_width="fill_parent"
