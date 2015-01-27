@@ -4,7 +4,7 @@
         android:id="@+id/action_refresh"
         android:showAsAction="ifRoom"
         android:title="Refresh"
-        android:icon="@android:drawable/ic_menu_compass"/>
+        android:icon="@drawable/ic_refresh"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

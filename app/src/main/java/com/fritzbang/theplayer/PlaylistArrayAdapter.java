@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
@@ -39,17 +40,20 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
 
     public void removeSelection() {
         mSelectedItemsIds = new SparseBooleanArray();
+        Log.d(DEBUG_TAG,"selections removed");
         notifyDataSetChanged();
     }
 
     public void toggleSelection(int position) {
-        selectView(position,!mSelectedItemsIds.get(position));
+        Log.d(DEBUG_TAG,"toggleSelection");
+        selectView(position, !mSelectedItemsIds.get(position));
     }
 
     private void selectView(int position, boolean value) {
         if(value){
             mSelectedItemsIds.put(position,value);
         }else{
+            Log.d(DEBUG_TAG,"selection deleted");
             mSelectedItemsIds.delete(position);
         }
         notifyDataSetChanged();
@@ -64,6 +68,7 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
 		public TextView songTitle;
 		public TextView albumTitle;
 		public TextView artist;
+        public ImageView albumImage;
 	}
 
 	public PlaylistArrayAdapter(Activity context,
@@ -165,44 +170,18 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
 			LayoutInflater inflater = context.getLayoutInflater();
 			rowView = inflater.inflate(R.layout.playlist_list_entry, null);
 			ViewHolder viewHolder = new ViewHolder();
-			viewHolder.songTitle = (TextView) rowView
-					.findViewById(R.id.song_title);
-			viewHolder.albumTitle = (TextView) rowView
-					.findViewById(R.id.album_title);
+			viewHolder.songTitle = (TextView) rowView.findViewById(R.id.song_title);
+			viewHolder.albumTitle = (TextView) rowView.findViewById(R.id.album_title);
 			viewHolder.artist = (TextView) rowView.findViewById(R.id.artist);
-
+            viewHolder.albumImage = (ImageView)rowView.findViewById(R.id.album_image);
 			rowView.setTag(viewHolder);
-		}else{
-            if(mSelectedItemsIds.get(position,false)){
-                LayoutInflater inflater = context.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.playlist_list_entry_checkbox, null);
-                ViewHolder viewHolder = new ViewHolder();
-                viewHolder.songTitle = (TextView) rowView
-                        .findViewById(R.id.song_title);
-                viewHolder.albumTitle = (TextView) rowView
-                        .findViewById(R.id.album_title);
-                viewHolder.artist = (TextView) rowView.findViewById(R.id.artist);
-
-                rowView.setTag(viewHolder);
-            }else{
-                LayoutInflater inflater = context.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.playlist_list_entry, null);
-                ViewHolder viewHolder = new ViewHolder();
-                viewHolder.songTitle = (TextView) rowView
-                        .findViewById(R.id.song_title);
-                viewHolder.albumTitle = (TextView) rowView
-                        .findViewById(R.id.album_title);
-                viewHolder.artist = (TextView) rowView.findViewById(R.id.artist);
-
-                rowView.setTag(viewHolder);
-            }
-        }
+		}
 
 		// rowView.setBackgroundColor(color.white);
 		ViewHolder holder = (ViewHolder) rowView.getTag();
         if(mSelectedItemsIds.get(position,false)){
-
             rowView.setBackgroundColor(Color.MAGENTA);
+             holder.albumImage.setImageResource(R.drawable.ic_checked);
         }else{
             switch(trackBeans.get(position).status) {
                 case TrackBean.TRACK_STATUS_CURRENT:
@@ -214,10 +193,11 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
                 case TrackBean.TRACK_STATUS_PARTIAL:
                     rowView.setBackgroundColor(Color.GRAY);
                     break;
-            case TrackBean.TRACK_STATUS_UNPLAYED:
-                rowView.setBackgroundColor(Color.WHITE);
-                break;
+                case TrackBean.TRACK_STATUS_UNPLAYED:
+                    rowView.setBackgroundColor(Color.WHITE);
+                     break;
             }
+            holder.albumImage.setImageResource(R.drawable.list_item_selector);
         }
 
 
