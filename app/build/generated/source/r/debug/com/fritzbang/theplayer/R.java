@@ -21,8 +21,9 @@ public final class R {
     public static final class drawable {
         public static final int ic_checked=0x7f020000;
         public static final int ic_launcher=0x7f020001;
-        public static final int list_activated_background=0x7f020002;
-        public static final int list_item_selector=0x7f020003;
+        public static final int ic_refresh=0x7f020002;
+        public static final int list_activated_background=0x7f020003;
+        public static final int list_item_selector=0x7f020004;
     }
     public static final class id {
         public static final int TAG_FILE_ID=0x7f060000;

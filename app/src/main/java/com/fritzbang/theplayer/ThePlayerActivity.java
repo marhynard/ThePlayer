@@ -48,14 +48,14 @@ public class ThePlayerActivity extends Activity {
 
 	private ThePlayerMediaService thePlayerMediaService;
 
-	static final String STATE_START_TIME = "startTime";
+	static final String STATE_TRACK_POSITION = "currentTrackPosition";
 	static final String STATE_TRACK_NAME = "trackName";
 	static final String STATE_TRACK_LOCATION = "trackLocation";
 	static final String STATE_TRACK_LIST_POSITION = "trackListPosition";
     static final String STATE_LIST_SORT_TYPE = "sortType";
 
-	public TextView textViewSongName, textViewAlbumName,textViewArtist, startTimeField, endTimeField, textViewSpace;
-	private int startTime = 0;
+	public TextView textViewSongName, textViewAlbumName,textViewArtist, currentTrackPositionField, endTimeField, textViewSpace;
+	private int currentTrackPosition = 0;
 	private Handler myHandler = new Handler();
 	private int forwardTime = 5000;
 	private int backwardTime = 5000;
@@ -82,12 +82,6 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio={"Title","Album","Artist","Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-
-    // TODO fix the coloring for the played schemes
-    // TODO fix the track position when a different track is selected
-    // TODO add a progress dialog to the delete tasks
-
-    // TODO update the list view when a refresh is done
     // TODO preserve the sort state
 
     // TODO check the DB for the status of the tracks
@@ -161,7 +155,8 @@ public class ThePlayerActivity extends Activity {
 		ActivityHelper.initialize(this);
 		if (savedInstanceState != null) {
 
-			startTime = savedInstanceState.getInt(STATE_START_TIME);
+            currentTrackPosition = savedInstanceState.getInt(STATE_TRACK_POSITION);
+            selectedTrackInfo.position = currentTrackPosition;
 			selectedTrackInfo.trackTitle = savedInstanceState
 					.getString(STATE_TRACK_NAME);
 			selectedTrackInfo.location = savedInstanceState
@@ -283,7 +278,7 @@ public class ThePlayerActivity extends Activity {
 
 //		String songTitle = selectedTrackInfo.trackTitle;
 //		songName.setText(songTitle);
-		thePlayerMediaService.restore(selectedTrackInfo, startTime);
+		thePlayerMediaService.restore(selectedTrackInfo, currentTrackPosition);
 		gotFinish = false;
 		playButton.setImageResource(android.R.drawable.ic_media_pause);
 		seekBar.setClickable(true);
@@ -294,7 +289,7 @@ public class ThePlayerActivity extends Activity {
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		// Save the user's current state
-		savedInstanceState.putInt(STATE_START_TIME, startTime);
+		savedInstanceState.putInt(STATE_TRACK_POSITION, currentTrackPosition);
 		savedInstanceState.putString(STATE_TRACK_NAME,
 				selectedTrackInfo.trackTitle);
 		savedInstanceState.putString(STATE_TRACK_LOCATION,
@@ -311,7 +306,7 @@ public class ThePlayerActivity extends Activity {
 		textViewSongName = (TextView) findViewById(R.id.textViewSongTitle);
         textViewAlbumName = (TextView) findViewById(R.id.textViewAlbumTitle);
         textViewArtist = (TextView) findViewById(R.id.textViewArtist);
-		startTimeField = (TextView) findViewById(R.id.textViewCurrentTime);
+		currentTrackPositionField = (TextView) findViewById(R.id.textViewCurrentTime);
 		endTimeField = (TextView) findViewById(R.id.textViewTotalTime);
 		seekBar = (SeekBar) findViewById(R.id.seekBar);
 		playButton = (ImageButton) findViewById(R.id.buttonPlay);
@@ -362,8 +357,8 @@ public class ThePlayerActivity extends Activity {
 				// Sets the currentSongListIndex
 
 				if (currentSongListIndex != position) {
-//                    if(currentSongListIndex != -1)
-//                        ThePlayerActivity.this.updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_PARTIAL,thePlayerMediaService.getCurrentPosition());
+                    if(currentSongListIndex != -1)
+                    ThePlayerActivity.this.updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_PARTIAL,thePlayerMediaService.getCurrentPosition());
 
 					currentSongListIndex = position;
 					getNextTrackToPlay(currentSongListIndex);
@@ -458,13 +453,13 @@ public class ThePlayerActivity extends Activity {
                 SharedPreferences settings = getPreferences(MODE_PRIVATE);
 
                 String currentFile = settings.getString("currentFile","none");
-                startTime = settings.getInt("currentPosition",0);
+                currentTrackPosition = settings.getInt("currentPosition",0);
                 if(currentFile.equals("none")){
                     currentSongListIndex = 0;
 
                 }else{
                     Log.d(DEBUG_TAG,"The currentFile is: " + currentFile);
-                    Log.d(DEBUG_TAG,"The currentPosition is: " + startTime);
+                    Log.d(DEBUG_TAG,"The currentPosition is: " + currentTrackPosition);
                     currentSongListIndex = this.plaAdapter.getItem(currentFile);
                 }
 
@@ -481,8 +476,8 @@ public class ThePlayerActivity extends Activity {
 		public void run() {
 			try {
 				if (thePlayerMediaService.isPlaying()) {
-					startTime = thePlayerMediaService.getCurrentPosition();
-					startTimeField.setText(convertToTime(startTime));
+					currentTrackPosition = thePlayerMediaService.getCurrentPosition();
+					currentTrackPositionField.setText(convertToTime(currentTrackPosition));
 					playButton
 							.setImageResource(android.R.drawable.ic_media_pause);
 					isPlaying = true;
@@ -492,9 +487,9 @@ public class ThePlayerActivity extends Activity {
 						seekBar.setMax(finalTime);
 						gotFinish = true;
 					}
-					// Log.d(DEBUG_TAG, "startTime: " + startTime + " : " +
+					// Log.d(DEBUG_TAG, "currentTrackPosition: " + currentTrackPosition + " : " +
 					// finalTime);
-					seekBar.setProgress((int) startTime);
+					seekBar.setProgress((int) currentTrackPosition);
                     int currpos = saveTrackState();
                     updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
 					myHandler.postDelayed(this, 100);
@@ -527,7 +522,7 @@ public class ThePlayerActivity extends Activity {
 		currentSongListIndex--;
 		if (currentSongListIndex < 0)
 			currentSongListIndex = 0;
-        startTime = 0;
+        currentTrackPosition = 0;
 		getNextTrackToPlay(currentSongListIndex);
 
 	}
@@ -539,7 +534,7 @@ public class ThePlayerActivity extends Activity {
         updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_PARTIAL,currpos);
 		// load the next track on the list
 		currentSongListIndex++;
-        startTime = 0;
+        //currentTrackPosition = 0;
 		getNextTrackToPlay(currentSongListIndex);
 		// playlistView.setSelection(currentSongListIndex);
 	}
@@ -558,7 +553,8 @@ public class ThePlayerActivity extends Activity {
             textViewArtist.setText(selectedTrackInfo.artist);
             textViewAlbumName.setText(selectedTrackInfo.album);
 			thePlayerMediaService.play(selectedTrackInfo);
-            thePlayerMediaService.seek(startTime);
+            currentTrackPosition = selectedTrackInfo.position;
+            thePlayerMediaService.seek(selectedTrackInfo.position);
 			isPlaying = true;
 			gotFinish = false;
             playButton.setImageResource(android.R.drawable.ic_media_pause);
@@ -589,7 +585,7 @@ public class ThePlayerActivity extends Activity {
     }
 
 	protected void setTime(int currentPosition, int duration) {
-		startTimeField.setText(convertToTime(currentPosition));
+		currentTrackPositionField.setText(convertToTime(currentPosition));
 		endTimeField.setText(convertToTime(duration));
 
 	}
@@ -700,6 +696,7 @@ public class ThePlayerActivity extends Activity {
             loadListViewTask.cancel(true);
         loadingTrackTask = new LoadingTrackTask(context,textViewSpace);
         loadingTrackTask.execute(directoryLocation);
+        addPlayList();
     }
 
     private void showSortSelection() {
@@ -777,7 +774,7 @@ public class ThePlayerActivity extends Activity {
 		@Override
 		public void onStopTrackingTouch(SeekBar seekBar) {
             thePlayerMediaService.seek(seekBar.getProgress());
-            startTimeField.setText(convertToTime(seekBar.getProgress()));
+            currentTrackPositionField.setText(convertToTime(seekBar.getProgress()));
             int currpos = saveTrackState();
             updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
         }
@@ -792,7 +789,7 @@ public class ThePlayerActivity extends Activity {
 //                            Toast.LENGTH_LONG).show();
                     updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_FINISHED,0);
                     currentSongListIndex++;
-                    startTime = 0;
+                    currentTrackPosition = 0;
                     getNextTrackToPlay(currentSongListIndex);
                     break;
                 case ThePlayerMediaService.SHUTDOWN_MESSAGE:
