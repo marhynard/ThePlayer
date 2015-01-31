@@ -140,10 +140,10 @@ public class DBAdapter {
         return db.rawQuery(TRACK_INFO_QUERY, null);
     }
 
-    public boolean updateStatusInfo(TrackBean item, int status, int position) {
+    public boolean updateStatusInfo(TrackBean item) {
         ContentValues args = new ContentValues();
-        args.put(KEY_TRACK_STATUS, status);
-        args.put(KEY_TRACK_POSITION, position);
+        args.put(KEY_TRACK_STATUS, item.status);
+        args.put(KEY_TRACK_POSITION, item.position);
 
         return db.update(DATABASE_TABLE_TRACK_INFO, args, KEY_TRACK_LOCATION + "=\"" + item.location + "\"",
                 null) > 0;

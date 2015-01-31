@@ -84,11 +84,7 @@ public class ThePlayerActivity extends Activity {
 
     // TODO preserve the sort state
 
-    // TODO check the DB for the status of the tracks
-    // TODO pull the state of the track from the db and load or
-    // TODO if no track has been selected check the DB for the running track
-    // TODO update the status of each track in the database
-    // TODO mark each track based on the status(if it is available)
+    // TODO if no track has been selected check the DB for the current track
 
     // TODO keep playing when <- is selected
 	// TODO modify so it saves the state when the app is left
@@ -232,9 +228,11 @@ public class ThePlayerActivity extends Activity {
 		Log.d(DEBUG_TAG, "pausing activity");
 		// stop checking the status
 		myHandler.removeCallbacks(UpdateSongTime);
+        updateDatabase();
 	}
 
-	@Override
+
+    @Override
 	public void onResume() {
 		super.onResume(); // Always call the superclass method first
 		Log.d(DEBUG_TAG, "resuming activity");
@@ -601,8 +599,17 @@ public class ThePlayerActivity extends Activity {
 //        db.updateStatusInfo(this.plaAdapter.getItem(trackIndex),status,position);
 //        db.close();
     }
+    private void updateDatabase() {
+        DBAdapter db = new DBAdapter(context);
+        db.open();
+        for(int x = 0; x < this.plaAdapter.getCount(); x++) {
+            db.updateStatusInfo(this.plaAdapter.getItem(x));
+        }
+        db.close();
+    }
 
-	protected void setTime(int currentPosition, int duration) {
+
+    protected void setTime(int currentPosition, int duration) {
 		currentTrackPositionField.setText(convertToTime(currentPosition));
 		endTimeField.setText(convertToTime(duration));
 
