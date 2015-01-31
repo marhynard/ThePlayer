@@ -98,7 +98,6 @@ public class ThePlayerActivity extends Activity {
 
     // TODO fix the currentSongListIndex after deleting
     // TODO fix issue with resetting the currently playing color after a delete
-    // TODO fix issue with paused track and clicking next(it plays the current track and updates the information
 
     // TODO add the buttons to the lockscreen area
 
@@ -275,7 +274,7 @@ public class ThePlayerActivity extends Activity {
 		this.textViewSongName.setText(selectedTrackInfo.trackTitle);
         this.textViewAlbumName.setText(selectedTrackInfo.album);
         this.textViewArtist.setText(selectedTrackInfo.artist);
-
+        currentTrackPosition = selectedTrackInfo.position;
 //		String songTitle = selectedTrackInfo.trackTitle;
 //		songName.setText(songTitle);
 		thePlayerMediaService.restore(selectedTrackInfo, currentTrackPosition);
@@ -357,8 +356,11 @@ public class ThePlayerActivity extends Activity {
 				// Sets the currentSongListIndex
 
 				if (currentSongListIndex != position) {
-                    if(currentSongListIndex != -1)
-                    ThePlayerActivity.this.updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_PARTIAL,thePlayerMediaService.getCurrentPosition());
+                    if(currentSongListIndex != -1) {
+                        Log.d(DEBUG_TAG, "Thepositionis: " + thePlayerMediaService.getCurrentPosition());
+                        Log.d(DEBUG_TAG, "Thelocationis: " + currentSongListIndex);
+                        ThePlayerActivity.this.updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_PARTIAL, thePlayerMediaService.getCurrentPosition());
+                    }
 
 					currentSongListIndex = position;
 					getNextTrackToPlay(currentSongListIndex);
@@ -452,8 +454,8 @@ public class ThePlayerActivity extends Activity {
                 // Restore preferences
                 SharedPreferences settings = getPreferences(MODE_PRIVATE);
 
-                String currentFile = settings.getString("currentFile","none");
-                currentTrackPosition = settings.getInt("currentPosition",0);
+                String currentFile = settings.getString(STATE_TRACK_LOCATION,"none");
+                currentTrackPosition = settings.getInt(STATE_TRACK_POSITION,0);
                 if(currentFile.equals("none")){
                     currentSongListIndex = 0;
 
@@ -463,7 +465,11 @@ public class ThePlayerActivity extends Activity {
                     currentSongListIndex = this.plaAdapter.getItem(currentFile);
                 }
 
+            }else{
+                Log.d(DEBUG_TAG,"It was probably paused");
+
             }
+
 			getNextTrackToPlay(currentSongListIndex);
 			isPlaying = true;
 		}
@@ -490,8 +496,8 @@ public class ThePlayerActivity extends Activity {
 					// Log.d(DEBUG_TAG, "currentTrackPosition: " + currentTrackPosition + " : " +
 					// finalTime);
 					seekBar.setProgress((int) currentTrackPosition);
-                    int currpos = saveTrackState();
-                    updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
+                    //int currpos = saveTrackState();
+                    //updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
 					myHandler.postDelayed(this, 100);
 				}
 			} catch (NullPointerException ex) {
@@ -504,25 +510,28 @@ public class ThePlayerActivity extends Activity {
 	public void forward(View view) {
 		thePlayerMediaService.forward(forwardTime);
         int currpos = saveTrackState();
-        updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
+        //updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
 	}
 
 	public void rewind(View view) {
 		thePlayerMediaService.rewind(backwardTime);
         int currpos = saveTrackState();
-        updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
+        //updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, currpos);
 	}
 
 	public void previous(View view) {
 		Toast.makeText(getApplicationContext(), "Going to Previous Track",
 				Toast.LENGTH_SHORT).show();
+        if(!isPlaying){
+            getNextTrackToPlay(currentSongListIndex);
+        }
 		int currpos = saveTrackState();
         updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_PARTIAL,currpos);
 		// load the previous track on the list
 		currentSongListIndex--;
 		if (currentSongListIndex < 0)
 			currentSongListIndex = 0;
-        currentTrackPosition = 0;
+        //currentTrackPosition = 0;
 		getNextTrackToPlay(currentSongListIndex);
 
 	}
@@ -530,10 +539,16 @@ public class ThePlayerActivity extends Activity {
 	public void next(View view) {
 		Toast.makeText(getApplicationContext(), "Going to Next Track",
 				Toast.LENGTH_SHORT).show();
+        Log.d(DEBUG_TAG,"Going to Next Track is playing: " + isPlaying);
+        if(!isPlaying){
+            getNextTrackToPlay(currentSongListIndex);
+        }
         int currpos = saveTrackState();
         updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_PARTIAL,currpos);
+       // updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_PARTIAL,ThePlayerActivity.this.thePlayerMediaService.getCurrentPosition());
 		// load the next track on the list
 		currentSongListIndex++;
+
         //currentTrackPosition = 0;
 		getNextTrackToPlay(currentSongListIndex);
 		// playlistView.setSelection(currentSongListIndex);
@@ -543,17 +558,19 @@ public class ThePlayerActivity extends Activity {
 		Log.d(DEBUG_TAG,
 				"gnt: Size of playlistView: " + playlistView.getCount());
 		try {
-            updateTrackBeanState(trackToPlay,TrackBean.TRACK_STATUS_CURRENT,0);
+
 			selectedTrackInfo = (TrackBean) playlistView
 					.getItemAtPosition(trackToPlay);
-			Log.d(DEBUG_TAG, selectedTrackInfo.trackTitle);
-			Log.d(DEBUG_TAG, selectedTrackInfo.location);
+			Log.d(DEBUG_TAG, "trackTitle: " + selectedTrackInfo.trackTitle);
+			Log.d(DEBUG_TAG, "location: " + selectedTrackInfo.location);
+            Log.d(DEBUG_TAG, "position: " + selectedTrackInfo.position);
 			playlistView.setSelection(trackToPlay);
 			textViewSongName.setText(selectedTrackInfo.trackTitle);
             textViewArtist.setText(selectedTrackInfo.artist);
             textViewAlbumName.setText(selectedTrackInfo.album);
 			thePlayerMediaService.play(selectedTrackInfo);
             currentTrackPosition = selectedTrackInfo.position;
+            updateTrackBeanState(trackToPlay,TrackBean.TRACK_STATUS_CURRENT,currentTrackPosition);
             thePlayerMediaService.seek(selectedTrackInfo.position);
 			isPlaying = true;
 			gotFinish = false;
@@ -571,12 +588,13 @@ public class ThePlayerActivity extends Activity {
 
         SharedPreferences settings = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("currentFile", currentFile);
-        editor.putInt("currentPosition",currentPosition);
+        editor.putString(STATE_TRACK_LOCATION, currentFile);
+        editor.putInt(STATE_TRACK_POSITION, currentPosition);
         editor.commit();
         return currentPosition;
 	}
     private void updateTrackBeanState(int trackIndex,int status,int position){
+        Log.d(DEBUG_TAG,"Updating trackBean");
         this.plaAdapter.updateStatus(trackIndex,status,position);
 //        DBAdapter db = new DBAdapter(context);
 //        db.open();
@@ -789,13 +807,14 @@ public class ThePlayerActivity extends Activity {
 //                            Toast.LENGTH_LONG).show();
                     updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_FINISHED,0);
                     currentSongListIndex++;
-                    currentTrackPosition = 0;
+                    //currentTrackPosition = 0;
                     getNextTrackToPlay(currentSongListIndex);
                     break;
                 case ThePlayerMediaService.SHUTDOWN_MESSAGE:
                     stopApplication();
                     break;
                 case ThePlayerMediaService.PAUSE_MESSAGE:
+                    updateTrackBeanState(currentSongListIndex,TrackBean.TRACK_STATUS_CURRENT,ThePlayerActivity.this.thePlayerMediaService.getCurrentPosition());
                     ThePlayerActivity.this.playButton.setImageResource(android.R.drawable.ic_media_play);
                     isPlaying = false;
                     break;

@@ -30,7 +30,11 @@ public class PlaylistArrayAdapter extends ArrayAdapter<TrackBean> {
     private SparseBooleanArray mSelectedItemsIds;
 
     public void updateStatus(int trackToPlay,int status,int position) {
-        trackBeans.get(trackToPlay).status = status;
+        TrackBean tmp = trackBeans.get(trackToPlay);
+        tmp.status = status;
+        tmp.position = position;
+        trackBeans.set(trackToPlay,tmp);
+        Log.d(DEBUG_TAG,"AdapterPosition: " + trackToPlay + " " + position);
         this.notifyDataSetChanged();
     }
 
