@@ -82,14 +82,9 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio={"Title","Album","Artist","Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-    // TODO preserve the sort state
-
-    // TODO if no track has been selected check the DB for the current track
-
+    // TODO shutdown properly
+    // TODO add an option setting to skip tracks that have been played if not chosen play from beginning
     // TODO keep playing when <- is selected
-	// TODO modify so it saves the state when the app is left
-	// TODO need to save the state of the playlist
-    // TODO save state when rotating
     // TODO shutdown after certain amount of time idle(make modifiable)
 
     // TODO fix the currentSongListIndex after deleting
@@ -159,9 +154,20 @@ public class ThePlayerActivity extends Activity {
 			currentSongListIndex = savedInstanceState
 					.getInt(STATE_TRACK_LIST_POSITION);
             sortType = savedInstanceState.getInt(STATE_LIST_SORT_TYPE);
+            Log.d(DEBUG_TAG,"sortType: " + sortType);
 			if (selectedTrackInfo.trackTitle != null)
 				restoreTrack = true;
 		}
+        if(currentSongListIndex == -1) {
+            DBAdapter dbAdapter = new DBAdapter(this);
+            dbAdapter.open();
+            TrackBean currentTrackBean = dbAdapter.getCurrentTrack();
+            dbAdapter.close();
+            if(currentTrackBean != null){
+                selectedTrackInfo = currentTrackBean;
+            }
+        }
+
         try {
             directoryLocation = getApplicationContext().getExternalFilesDir(null).getAbsolutePath();
         }catch(NullPointerException ex){
@@ -285,6 +291,7 @@ public class ThePlayerActivity extends Activity {
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(DEBUG_TAG,"savedInstanceState");
 		// Save the user's current state
 		savedInstanceState.putInt(STATE_TRACK_POSITION, currentTrackPosition);
 		savedInstanceState.putString(STATE_TRACK_NAME,
@@ -323,9 +330,13 @@ public class ThePlayerActivity extends Activity {
 			trackBeans.clear();
 		}
 
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        sortType = settings.getInt(STATE_LIST_SORT_TYPE,PlaylistArrayAdapter.TRACK_SORT);
+
 		playlistView = (ListView) findViewById(R.id.listViewPlaylist);
 
 		plaAdapter = new PlaylistArrayAdapter(this, trackBeans);
+        Log.d(DEBUG_TAG,"The sort type: " + sortType);
         plaAdapter.setSortType(sortType);
         loadListViewTask = new LoadListViewTask(context, plaAdapter,
 				textViewSpace,directoryLocation);
@@ -450,10 +461,9 @@ public class ThePlayerActivity extends Activity {
                     return;
                 }
                 // Restore preferences
-                SharedPreferences settings = getPreferences(MODE_PRIVATE);
-
-                String currentFile = settings.getString(STATE_TRACK_LOCATION,"none");
-                currentTrackPosition = settings.getInt(STATE_TRACK_POSITION,0);
+                //SharedPreferences settings = getPreferences(MODE_PRIVATE);
+                String currentFile = selectedTrackInfo.location;//settings.getString(STATE_TRACK_LOCATION,"none");
+                //currentTrackPosition = settings.getInt(STATE_TRACK_POSITION,0);
                 if(currentFile.equals("none")){
                     currentSongListIndex = 0;
 
@@ -701,7 +711,7 @@ public class ThePlayerActivity extends Activity {
 			showLocationSelection();
 			return true;
 		case R.id.action_exit:
-			this.finish();
+			stopApplication();
 			return true;
         case R.id.action_sort:
             showSortSelection();
@@ -733,8 +743,13 @@ public class ThePlayerActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
 //                Toast.makeText(getApplicationContext(),
 //                        "The sort type is "+sortType_radio[which], Toast.LENGTH_LONG).show();
+                sortType = which;
                 ThePlayerActivity.this.plaAdapter.sortTracks(which);
                 ThePlayerActivity.this.plaAdapter.notifyDataSetChanged();
+                SharedPreferences settings = getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putInt(STATE_LIST_SORT_TYPE, sortType);
+                editor.commit();
                 //dismissing the dialog when the user makes a selection.
                 dialog.dismiss();
             }
@@ -873,7 +888,8 @@ public class ThePlayerActivity extends Activity {
 	 * Stops the Application
 	 */
 	private void stopApplication() {
-		this.finish();
+        updateDatabase();
+        this.finish();
 	}
 
 	/* Checks if external storage is available for read and write */

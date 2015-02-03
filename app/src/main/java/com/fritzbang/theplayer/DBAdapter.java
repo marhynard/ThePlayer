@@ -55,6 +55,23 @@ public class DBAdapter {
 		DBHelper = new DatabaseHelper(context);
 	}
 
+    public TrackBean getCurrentTrack() {
+        Cursor cs = db.rawQuery(TRACK_INFO_QUERY + " where track_status=" + TrackBean.TRACK_STATUS_CURRENT, new String[] {});
+        if(cs.getCount() >= 1) {
+            cs.moveToFirst();
+            Log.d(DEBUG_TAG, "Number of Rows: " + cs.getCount());
+            TrackBean returnBean = new TrackBean();
+            returnBean.location = cs.getString(cs.getColumnIndex(KEY_TRACK_LOCATION));
+            returnBean.position = cs.getInt(cs.getColumnIndex(KEY_TRACK_POSITION));
+            returnBean.status = cs.getInt(cs.getColumnIndex(KEY_TRACK_STATUS));
+            returnBean.album = cs.getString(cs.getColumnIndex(KEY_TRACK_ALBUM));
+            returnBean.artist = cs.getString(cs.getColumnIndex(KEY_TRACK_ARTIST));
+            returnBean.trackTitle = cs.getString(cs.getColumnIndex(KEY_TRACK_TITLE));
+            return returnBean;
+        }else
+            return null;
+    }
+
     private static class DatabaseHelper extends SQLiteOpenHelper {
 		DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
