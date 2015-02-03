@@ -67,7 +67,7 @@ public class ThePlayerActivity extends Activity {
 	PlaylistArrayAdapter plaAdapter;
     private int sortType = PlaylistArrayAdapter.TITLE_SORT;
 
-	ArrayList<TrackBean> trackBeans = new ArrayList<TrackBean>();
+	ArrayList<TrackBean> trackBeans = new ArrayList<>();
 
 	private boolean isPlaying = false;
 	private boolean gotFinish = false;
@@ -82,21 +82,19 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio={"Title","Album","Artist","Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-    // TODO shutdown properly
     // TODO add an option setting to skip tracks that have been played if not chosen play from beginning
     // TODO keep playing when <- is selected
     // TODO shutdown after certain amount of time idle(make modifiable)
 
     // TODO fix the currentSongListIndex after deleting
-    // TODO fix issue with resetting the currently playing color after a delete
 
     // TODO add the buttons to the lockscreen area
 
     // TODO add popup for restart when a track is playing and want to start over.(double click to restart?)
 	// TODO change icons for the app
 
-    // TODO add album art
-
+    // TODO add album art (musicbrainz.org)
+    // TODO organize the songs into folders from where they came
 	// TODO remove the debugging messages
 
     //later features to add
@@ -888,6 +886,8 @@ public class ThePlayerActivity extends Activity {
 	 * Stops the Application
 	 */
 	private void stopApplication() {
+          thePlayerMediaService.stopForeground(true);
+        doUnbindService();
         updateDatabase();
         this.finish();
 	}
