@@ -86,8 +86,6 @@ public class ThePlayerActivity extends Activity {
     // TODO keep playing when <- is selected
     // TODO shutdown after certain amount of time idle(make modifiable)
 
-    // TODO fix the currentSongListIndex after deleting
-
     // TODO add the buttons to the lockscreen area
 
     // TODO add popup for restart when a track is playing and want to start over.(double click to restart?)
@@ -425,6 +423,7 @@ public class ThePlayerActivity extends Activity {
                                 File file = new File(selectedItem.location);
                                 //File dir = file.getParentFile();
                                 new DeleteTrackTask(context,textViewSpace).execute(file);
+                                currentSongListIndex = plaAdapter.getItem(selectedTrackInfo.location);
                                 //updateSpaceAvailable(dir);
 
                             }
