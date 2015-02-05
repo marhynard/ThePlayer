@@ -83,7 +83,6 @@ public class ThePlayerActivity extends Activity {
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
     // TODO add an option setting to skip tracks that have been played if not chosen play from beginning
-    // TODO keep playing when <- is selected
     // TODO shutdown after certain amount of time idle(make modifiable)
 
     // TODO add the buttons to the lockscreen area
@@ -254,6 +253,15 @@ public class ThePlayerActivity extends Activity {
         unregisterReceiver(myNoisyAudioStreamReceiver);
 		Log.d(DEBUG_TAG, "destroying activity");
 	}
+
+    @Override
+    public void onBackPressed(){
+        if(!isPlaying){
+            this.stopApplication();
+        }else{
+            moveTaskToBack(true);
+        }
+    }
 
 	private void doBindService() {
 		Intent intent = new Intent(this, ThePlayerMediaService.class);
@@ -783,18 +791,19 @@ public class ThePlayerActivity extends Activity {
 
 	}
 
+    @Override
 	protected void onStop() {
-		super.onStop();
+
         int currpos = saveTrackState();
-
-
-        if(currentSongListIndex != -1)
+        if(currentSongListIndex != -1 && this.isFinishing()) {
             updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_PARTIAL, currpos);
+        }
 		// sets the preference for the next time the application starts up
 		SharedPreferences settings = getPreferences(MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("directoryLocation", directoryLocation);
 		editor.commit();
+        super.onStop();
 	}
 
 	private OnSeekBarChangeListener seekBarChangeListener = new OnSeekBarChangeListener() {
