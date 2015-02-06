@@ -85,25 +85,28 @@ public class ThePlayerActivity extends Activity {
     // TODO add an option setting to skip tracks that have been played if not chosen play from beginning
     // TODO shutdown after certain amount of time idle(make modifiable)
 
+    // TODO add popup for restart when a track is playing and want to start over.(double click to restart?)
+    // TODO organize the songs into folders from where they came
+
     // TODO add the buttons to the lockscreen area
 
-    // TODO add popup for restart when a track is playing and want to start over.(double click to restart?)
-	// TODO change icons for the app
-
     // TODO add album art (musicbrainz.org)
-    // TODO organize the songs into folders from where they came
-	// TODO remove the debugging messages
 
-    //later features to add
 	// TODO add the phone call handling functionallity
     // TODO add functionality to add files to the directory remotely
-    // TODO back up the list of files to the sdcard(in case of something happening) this may also be a database function
+    // TODO ? back up the list of files to the sdcard(in case of something happening) this may also be a database function
+
+    // TODO add visualization
     // TODO implement the podcast features from DownLow (This will introduce a huge set of TODOs
+
+    // TODO change icons for the app
     // TODO figure out the proper way to manage other files(bypass the Android 5 requirement to use app-directory)
 
     //Much later features to add
     // TODO add the chrome cast ability
-    // TODO add visualization
+    // TODO remove the debugging messages
+
+
 
 	// /mnt/sdcard/Music /mnt/sdcard/NewMusic
 	// "/storage/sdcard1/Android/data/com.fritzbang.theplayer/files"
@@ -420,9 +423,9 @@ public class ThePlayerActivity extends Activity {
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                SparseBooleanArray selected = plaAdapter.getSelectedIds();
                 switch(item.getItemId()){
                     case R.id.delete:
-                        SparseBooleanArray selected = plaAdapter.getSelectedIds();
                         for(int i = (selected.size() -1); i >= 0; i--){
                             if(selected.valueAt(i)){
                                 TrackBean selectedItem = plaAdapter.getItem(selected.keyAt(i));
@@ -434,6 +437,25 @@ public class ThePlayerActivity extends Activity {
                                 currentSongListIndex = plaAdapter.getItem(selectedTrackInfo.location);
                                 //updateSpaceAvailable(dir);
 
+                            }
+                        }
+                        mode.finish();
+                        return true;
+                    case R.id.played:
+                        for(int i = (selected.size() -1); i >= 0; i--){
+                            if(selected.valueAt(i)){
+                                TrackBean selectedItem = plaAdapter.getItem(selected.keyAt(i));
+                                plaAdapter.updateStatus(selected.keyAt(i),TrackBean.TRACK_STATUS_FINISHED,selectedItem.position);
+
+                            }
+                        }
+                        mode.finish();
+                        return true;
+                    case R.id.not_played:
+                        for(int i = (selected.size() -1); i >= 0; i--){
+                            if(selected.valueAt(i)){
+                                TrackBean selectedItem = plaAdapter.getItem(selected.keyAt(i));
+                                plaAdapter.updateStatus(selected.keyAt(i),TrackBean.TRACK_STATUS_UNPLAYED,0);
                             }
                         }
                         mode.finish();

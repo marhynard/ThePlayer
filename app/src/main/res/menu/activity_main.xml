@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item
-    android:id="@+id/delete"
-    android:title="@string/delete"/>
+    <item
+        android:id="@+id/delete"
+        android:title="@string/delete"/>
+    <item
+        android:id="@+id/played"
+        android:title="@string/played"/>
+    <item
+        android:id="@+id/not_played"
+        android:title="@string/not_played"/>
 </menu>

@@ -31,11 +31,11 @@ public final class R {
         public static final int TAG_FILE_LOCATION=0x7f060002;
         public static final int TAG_FILE_POSITION=0x7f060003;
         public static final int TAG_PLAYLIST_POSITION=0x7f060004;
-        public static final int action_exit=0x7f06001c;
-        public static final int action_location=0x7f06001a;
-        public static final int action_refresh=0x7f060018;
-        public static final int action_settings=0x7f060019;
-        public static final int action_sort=0x7f06001b;
+        public static final int action_exit=0x7f06001e;
+        public static final int action_location=0x7f06001c;
+        public static final int action_refresh=0x7f06001a;
+        public static final int action_settings=0x7f06001b;
+        public static final int action_sort=0x7f06001d;
         public static final int album_image=0x7f060012;
         public static final int album_title=0x7f060014;
         public static final int artist=0x7f060015;
@@ -47,6 +47,8 @@ public final class R {
         public static final int checkBox=0x7f060016;
         public static final int delete=0x7f060017;
         public static final int listViewPlaylist=0x7f060011;
+        public static final int not_played=0x7f060019;
+        public static final int played=0x7f060018;
         public static final int seekBar=0x7f06000e;
         public static final int song_title=0x7f060013;
         public static final int textViewAlbumTitle=0x7f060007;
@@ -78,12 +80,14 @@ public final class R {
         public static final int forward=0x7f070009;
         public static final int hello_world=0x7f07000a;
         public static final int next=0x7f07000b;
-        public static final int play=0x7f07000c;
-        public static final int previous=0x7f07000d;
-        public static final int rewind=0x7f07000e;
-        public static final int song_title=0x7f07000f;
-        public static final int space_available=0x7f070010;
-        public static final int zero=0x7f070011;
+        public static final int not_played=0x7f07000c;
+        public static final int play=0x7f07000d;
+        public static final int played=0x7f07000e;
+        public static final int previous=0x7f07000f;
+        public static final int rewind=0x7f070010;
+        public static final int song_title=0x7f070011;
+        public static final int space_available=0x7f070012;
+        public static final int zero=0x7f070013;
     }
     public static final class style {
         /** 

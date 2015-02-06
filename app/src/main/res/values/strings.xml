@@ -19,5 +19,7 @@
 	<string name="album_title">Album Title</string>
     <string name="artist_text">artist</string>
     <string name="delete">Delete</string>
+    <string name="played">Mark as Played</string>
+    <string name="not_played">Mark Not Played</string>
 
 </resources>
