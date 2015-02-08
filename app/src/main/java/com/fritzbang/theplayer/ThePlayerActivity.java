@@ -82,8 +82,6 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio={"Title","Album","Artist","Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-    // TODO add an option setting to skip tracks that have been played if not chosen play from beginning
-    // TODO shutdown after certain amount of time idle(make modifiable)
 
     // TODO add popup for restart when a track is playing and want to start over.(double click to restart?)
     // TODO organize the songs into folders from where they came

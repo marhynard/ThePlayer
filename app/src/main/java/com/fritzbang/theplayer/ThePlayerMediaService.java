@@ -17,6 +17,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 @SuppressLint("NewApi")
 public class ThePlayerMediaService extends Service implements
@@ -28,14 +30,16 @@ public class ThePlayerMediaService extends Service implements
     public static final int PLAY_MESSAGE = 4;
 
 	private final IBinder mBinder = new MyBinder();
-
+    private Handler idleHandler = new Handler();
 	private MediaPlayer mediaPlayer = null;
 	private boolean isPlaying = false;
 	private static int classID = 579; // just a number
 	private Handler aHandler;
 	Notification notification;
 	private String currentTrackTitle = "";
-
+    private long currentTime = -1;
+    private long startIdleTime = -1;
+    private long idleDelay = 600000; //1000mill * 60sec * 10min = 600000
 	private static final String DEBUG_TAG = "ThePlayerMediaService";
 
 	@Override
@@ -60,16 +64,23 @@ public class ThePlayerMediaService extends Service implements
                     sendMessage(PLAY_MESSAGE);
 				}
 				if (intent.getAction().equalsIgnoreCase("shutdown")) {
-                    sendMessage(SHUTDOWN_MESSAGE);
-					this.stopForeground(true);
-					this.stop();
+                    shutdownThePlayerMediaService();
+
 				}
 			}
 
 		return Service.START_NOT_STICKY;
 	}
 
-	public void seek(int position) {
+    private boolean shutdownThePlayerMediaService() {
+        sendMessage(SHUTDOWN_MESSAGE);
+        idleHandler.removeCallbacks(IdleApplication);
+        this.stopForeground(true);
+        this.stop();
+        return false;
+    }
+
+    public void seek(int position) {
 		if (mediaPlayer != null) {
 			mediaPlayer.seekTo(position);
 		}
@@ -113,6 +124,8 @@ public class ThePlayerMediaService extends Service implements
 				mediaPlayer.pause();
                 notification = createPauseNotification(currentTrackTitle);
                 startForeground(classID, notification);
+                startIdleTime = -1;
+                idleHandler.postDelayed(IdleApplication, 500);
 			}
 			isPlaying = false;
 		}
@@ -325,4 +338,27 @@ public class ThePlayerMediaService extends Service implements
             }
         }
     }
+    private Runnable IdleApplication = new Runnable() {
+
+        public void run() {
+            if(isPlaying())
+                startIdleTime = -1;
+            else{
+                Calendar c = Calendar.getInstance();
+                currentTime = c.getTimeInMillis();
+                if(startIdleTime == -1)
+                    startIdleTime = currentTime;
+                long totalIdleTime = currentTime - startIdleTime;
+                //Log.d(DEBUG_TAG,"Time: " + currentTime + " " + startIdleTime + " " + totalIdleTime);
+                boolean postDelay = true;
+                if(totalIdleTime >= idleDelay)
+                {
+                   postDelay = shutdownThePlayerMediaService();
+                }
+                if(postDelay)
+                    idleHandler.postDelayed(this, 500);
+            }
+
+          }
+    };
 }
