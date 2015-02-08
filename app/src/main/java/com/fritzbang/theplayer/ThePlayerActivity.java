@@ -477,6 +477,7 @@ public class ThePlayerActivity extends Activity {
 		if (isPlaying) {
 			thePlayerMediaService.pause();
 			playButton.setImageResource(android.R.drawable.ic_media_play);
+            updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_CURRENT, thePlayerMediaService.getCurrentPosition());
 			isPlaying = false;
 
 		} else {
