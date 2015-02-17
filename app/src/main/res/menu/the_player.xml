@@ -19,6 +19,10 @@
         android:showAsAction="never"
         android:title="@string/action_sort"/>
     <item
+        android:id="@+id/action_add"
+        android:showAsAction="never"
+        android:title="@string/action_add"/>
+    <item
         android:id="@+id/action_exit"
         android:showAsAction="never"
         android:title="@string/action_exit"/>

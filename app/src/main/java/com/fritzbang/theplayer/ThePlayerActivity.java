@@ -83,24 +83,21 @@ public class ThePlayerActivity extends Activity {
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
 
-    // TODO add popup for restart when a track is playing and want to start over.(double click to restart?)
-    // TODO organize the songs into folders from where they came
-
-    // TODO add the buttons to the lockscreen area
+    // TODO organize the songs into folders from where they came(this will be in the copying software) need to read from the folders
 
     // TODO add album art (musicbrainz.org)
 
     // TODO add functionality to add files to the directory remotely
-    // TODO ? back up the list of files to the sdcard(in case of something happening) this may also be a database function
 
     // TODO add visualization
+    // TODO change icons for the app
     // TODO implement the podcast features from DownLow (This will introduce a huge set of TODOs
 
-    // TODO change icons for the app
-    // TODO figure out the proper way to manage other files(bypass the Android 5 requirement to use app-directory)
+
 
     //Much later features to add
     // TODO add the chrome cast ability
+    // TODO figure out the proper way to manage other files(bypass the Android 5 requirement to use app-directory)
     // TODO remove the debugging messages
 
 
@@ -754,6 +751,9 @@ public class ThePlayerActivity extends Activity {
             case R.id.action_sort:
                 showSortSelection();
                 return true;
+            case R.id.action_add:
+                addNewFiles();
+                return true;
             case R.id.action_refresh:
                 refreshDatabase();
                 return true;
@@ -761,6 +761,11 @@ public class ThePlayerActivity extends Activity {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    private void addNewFiles() {
+        Intent intent = new Intent(this, com.fritzbang.theplayer.PickHost.class);
+        startActivity(intent);
     }
 
     private void refreshDatabase() {
