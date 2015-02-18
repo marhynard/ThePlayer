@@ -27,11 +27,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-                <service 
+        <activity
+            android:name="com.fritzbang.theplayer.PickHost" >
+        </activity>
+        <activity
+            android:name="com.fritzbang.theplayer.DownloadQueue" >
+        </activity>
+        <activity
+            android:name="com.fritzbang.theplayer.SambaExplorer" >
+        </activity>
+        <activity
+            android:name="com.fritzbang.theplayer.SambaLogin" >
+        </activity>
+
+        <service
             android:enabled="true"
             android:name=".ThePlayerMediaService"
             android:permission="com.fritzbang.MY_SERVICE_PERMISSION" />
-                        <receiver android:name="ThePlayerStartServiceReceiver" >
+        <service
+            android:enabled="true"
+            android:name=".DownloadService"
+            android:permission="com.fritzbang.MY_SERVICE_PERMISSION" />
+        <receiver android:name="ThePlayerStartServiceReceiver" >
         </receiver>
     </application>
 
