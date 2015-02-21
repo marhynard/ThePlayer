@@ -7,49 +7,44 @@ package com.fritzbang.theplayer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
 
 
+import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
-public class SambaExplorer extends android.app.ListActivity {
-    public ArrayAdapter<String> mList;
-    public String[] mListStrings;
-    public String[] mListContents;
+public class SambaExplorer extends Activity {
+    private static final String DEBUG_TAG = "SambaExplorer";
     public String mHost;
-    int curListID=0;
-
+    TextView textViewStatus;
+    TextView textViewAddress;
+    TextView textViewNumFilesValue;
+    Button buttonAddTracks;
     public boolean active;
     private String IPsubnet;
+    int numberOfFiles = 0;
+    ArrayList<String> fileList = new ArrayList<>();
 
-    private static String ipAddressToString(int addr) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(addr  & 0xff).append('.').
-                append((addr >>>= 8) & 0xff).append('.').
-                append((addr >>>= 8) & 0xff).append('.').
-                append((addr >>>= 8) & 0xff);
-        return buf.toString();
-    }
 
     private static String getIPsubnet(int addr) {
         StringBuffer buf = new StringBuffer();
@@ -59,102 +54,15 @@ public class SambaExplorer extends android.app.ListActivity {
         return buf.toString();
     }
 
-    Thread m_subnetScanThread;
-    public int numThreadsRunning;
-    public int serversScanned;
-    class SubnetScanThread implements Runnable {
-        public SambaExplorer mOwner;
-
-        SubnetScanThread(SambaExplorer owner) {
-            mOwner = owner;
-        }
-
-        @Override
-        public void run() {
-
-            int timeout = 1000;
-            int start = 1;
-            int end = 10;
-
-            mOwner.numThreadsRunning++;
-
-            if (mOwner.IPsubnet.endsWith("*")) {
-                mOwner.IPsubnet = mOwner.IPsubnet.substring(0, mOwner.IPsubnet.length()-1);
-            }
-
-
-            for (int tries = 0; tries < 1; tries++) {
-                for (int i=start;i<=end;i++) {
-                    String serverName = new String(mOwner.IPsubnet+String.valueOf(i));
-                    mOwner.serversScanned++;
-
-                    while (!mOwner.active) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-
-                    try {
-                        InetAddress serverAddr = InetAddress.getByName(serverName);
-                        mOwner.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, (int)(9999.0 * ((1.0+mOwner.serversScanned)/256)));
-                        if (serverAddr.isReachable(timeout)) {
-                            mOwner.AddListItem("smb://"+serverAddr.getCanonicalHostName()+"/");
-                        }
-                    } catch (Exception e) {
-
-
-                        mOwner.AddListItem(e.getMessage());
-
-                    }
-                }
-                timeout += 500;
-            }
-
-            if (mOwner.numThreadsRunning == 1) {
-                // if we're the last thread running...
-
-
-                Runnable alertDialog = new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(SambaExplorer.this, "Finished scanning "+mOwner.serversScanned+" servers", Toast.LENGTH_SHORT);
-                    }
-                };
-
-                runOnUiThread(alertDialog);
-            }
-
-            mOwner.numThreadsRunning--;
-        }
-
-
-    };
-
-    private String mSubnetOverride;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.samba_explorer);
-        mListStrings = new String[255];
-        mListContents = new String[255];
-        for (int i=0;i<255;i++) {
-            mListStrings[i] = "";
-            mListContents[i] = "";
-        }
 
-        ListView view = getListView();
-        mList = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mListStrings);
-
-        view.setAdapter(mList);
-        view.setOnCreateContextMenuListener(this);
-
-
-
-
+        textViewStatus = (TextView) findViewById(R.id.textViewStatus);
+        buttonAddTracks = (Button) findViewById(R.id.buttonAddFiles);
+        textViewAddress = (TextView) findViewById(R.id.textViewAddressValue);
+        textViewNumFilesValue = (TextView) findViewById(R.id.textViewNumFilesValue);
 
         ConnectivityManager cm = (ConnectivityManager)this.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -170,33 +78,9 @@ public class SambaExplorer extends android.app.ListActivity {
         IPsubnet = getIPsubnet(info.ipAddress);
 
 
+        mHost = "smb://thepoop/prime/Music/";
 
-
-
-        mHost = null;
-
-        Intent intent = getIntent();
-        mHost = intent.getDataString();
-        //   mSubnetOverride = intent.getStringExtra("subnet");
-
-        if (mHost == null) {
-            //m_subnetScanThread = new Thread(new SubnetScanThread(this));
-            //m_subnetScanThread.start();
-
-            //startActivity(new Intent(this,com.shank.SambaExplorer.PickHost.class));
-
-            try{
-                Intent i = new Intent("com.shank.portscan.PortScan.class");
-                startActivity(i);
-            } catch (ActivityNotFoundException e) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("market://search?q=NetScan"));
-                startActivity(i);
-            }
-        } else {
-
-
-            SetLastListItem("Connecting to "+mHost);
+        Log.d(DEBUG_TAG,"Connecting to "+mHost);
 
             jcifs.Config.setProperty("jcifs.encoding", "Cp1252");
             jcifs.Config.setProperty("jcifs.smb.lmCompatibility", "0");
@@ -211,259 +95,94 @@ public class SambaExplorer extends android.app.ListActivity {
                     mHost = "smb://"+mHost+"/";
                 }
             }
-
-            SmbFile f;
-            try {
-
-                if (DownloadService.userAuth != null) {
-                    f = new SmbFile( mHost, DownloadService.userAuth );
-                } else {
-                    f = new SmbFile( mHost );
-                }
-
-                if (f.canRead()) {
-
-                    TraverseSMB(f,1);
-
-                }
-            } catch (SmbAuthException e) {
-                startActivity(new Intent(this, com.fritzbang.theplayer.SambaLogin.class).putExtra("path", mHost));
-            } catch (MalformedURLException e) {
-                final MalformedURLException E = e;
-                Runnable dialogPopup = new Runnable() {
-                    @Override
-                    public void run() {
-                        String StackTrace="";
-                        StackTraceElement[] Stack = E.getStackTrace();
-                        for (int i=0; i<Stack.length; i++) {
-                            StackTrace += Stack[i].toString() + "\n";
-                        }
-                        new AlertDialog.Builder(SambaExplorer.this)
-                                .setMessage(StackTrace)
-                                .setTitle(E.toString())
-                                .show();
-                    }
-                };
-                runOnUiThread(dialogPopup);
-            } catch (SmbException e) {
-                final SmbException E = e;
-                Runnable dialogPopup = new Runnable() {
-                    @Override
-                    public void run() {
-                        String StackTrace="";
-                        StackTraceElement[] Stack = E.getStackTrace();
-                        for (int i=0; i<Stack.length; i++) {
-                            StackTrace += Stack[i].toString() + "\n";
-                        }
-                        new AlertDialog.Builder(SambaExplorer.this)
-                                .setMessage(StackTrace)
-                                .setTitle(E.toString())
-                                .show();
-                    }
-                };
-                runOnUiThread(dialogPopup);
-            } catch (IOException e) {
-                final IOException E = e;
-                Runnable dialogPopup = new Runnable() {
-                    @Override
-                    public void run() {
-                        String StackTrace="";
-                        StackTraceElement[] Stack = E.getStackTrace();
-                        for (int i=0; i<Stack.length; i++) {
-                            StackTrace += Stack[i].toString() + "\n";
-                        }
-                        new AlertDialog.Builder(SambaExplorer.this)
-                                .setMessage(StackTrace)
-                                .setTitle(E.toString())
-                                .show();
-                    }
-                };
-                runOnUiThread(dialogPopup);
-            }
-        }
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        menu.add(0,0,0,"Download");
-        menu.add(0,1,1,"Rename");
-        menu.add(0,2,2,"Delete");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem menuItem) {
-
-
-        return false;
+            Log.d(DEBUG_TAG, "mHost: " + mHost);
+            new SambaExplorerTask().execute(mHost);
 
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        String share = mListContents[position];
-        if (share.startsWith("smb://")) {
+    class SambaExplorerTask extends AsyncTask<String, Integer, Integer> {
 
-            if (share.endsWith("/")) {
+        private static final String DEBUG_TAG = "SambaExplorerTask";
+        private ProgressDialog mDialog;
 
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(share));
-                startActivity(intent);
 
-            } else {
-                // files
+        String url;
 
-                DownloadService.QueueDownload(this, share);
-
-            }
-
+        public SambaExplorerTask() {
+//        mDialog = new ProgressDialog(context);
+//            this.context = context;
+//        mDialog.setMessage("Loading Files");
+//        mDialog.show();
         }
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        menu.add(0, 0, 0, "Download All");
-        menu.add(0, 1, 1, "Recursive Download All");
-        menu.add(0, 2, 2, "Download Queue");
-        menu.add(0, 3, 3, "Options");
-
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case 0:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            DownloadDirectory(new SmbFile(mHost),1);
-                        } catch (MalformedURLException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-                break;
-            case 1:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            DownloadDirectory(new SmbFile(mHost),255);
-                        } catch (MalformedURLException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-                break;
-
-            case 2:
-                Intent intent = new Intent(this, com.fritzbang.theplayer.DownloadQueue.class);
-                startActivity(intent);
-                break;
-        }
-        return false;
-    }
-    private Runnable updateAdapter = new Runnable() {
         @Override
-        public void run() {
-            mList.notifyDataSetChanged();
-        }
-    };
+        protected Integer doInBackground(String... params) {
 
-    public void ForceUpdate() {
-        runOnUiThread(updateAdapter);
-    }
-
-    public void SetLastListItem(String str) {
-        mListStrings[curListID] = str;
-        ForceUpdate();
-    }
-
-    public void AddListItem(String server) {
-        if (server.endsWith("/")) {
-            String temp = server.substring(0,server.lastIndexOf('/'));
-            mListStrings[curListID] = server.substring(temp.lastIndexOf('/'));
-        } else {
-            mListStrings[curListID] = server.substring(server.lastIndexOf('/'));
-        }
-        mListContents[curListID] = server;
-        curListID++;
-        ForceUpdate();
-
-    }
-
-    void DownloadDirectory( SmbFile f, int depth ) throws MalformedURLException, IOException {
-
-        if( depth == 0 ) {
-            return;
-        }
-        try{
-            SmbFile[] l;
-
-            l = f.listFiles();
-
-            for(int i = 0; l != null && i < l.length; i++ ) {
-                try {
-                    if( l[i].isDirectory() ) {
-                        DownloadDirectory( l[i], depth - 1 );
-                    } else {
-                        DownloadService.QueueDownload(this, l[i].getPath());
+            try {
+                url = params[0];
+                NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("", "matt", "backyard");
+                SmbFile dir = new SmbFile(url,auth);
+                if(dir.listFiles().length > 0){
+                    numberOfFiles = dir.listFiles().length;
+                    publishProgress(1);
+                for (SmbFile f : dir.listFiles()) {
+                    if(f.isDirectory()) {
+                        fileList.addAll(getFiles(f));
+                    }
+                    else {
+                        if (f.getPath().toLowerCase().endsWith(".mp3")){
+                            System.out.println(f.getName());
+                            fileList.add(f.getPath());
+                        }
                     }
 
-                    Thread.sleep(100);
-                } catch( IOException ioe ) {
-
                 }
+                    publishProgress(2);
+                }else{
+                    publishProgress(0);
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (SmbException e) {
+                e.printStackTrace();
             }
 
-        }catch(Exception e){
-            AddListItem(e.toString());
+            return null;
         }
-    }
 
-    void TraverseSMB( SmbFile f, int depth ) throws MalformedURLException, IOException {
+        private ArrayList<String> getFiles(SmbFile f) throws SmbException {
 
-        if( depth == 0 ) {
-            return;
-        }
-        try{
-            SmbFile[] l;
-
-            l = f.listFiles();
-
-            for(int i = 0; l != null && i < l.length; i++ ) {
-                try {
-
-                    AddListItem( l[i].getCanonicalPath());//.getDfsPath() );
-                    if( l[i].isDirectory() ) {
-                        TraverseSMB( l[i], depth - 1 );
-                    }
-
-                } catch (SmbAuthException e) {
-                    startActivity(new Intent(this, com.fritzbang.theplayer.SambaLogin.class).putExtra("path", l[i].getCanonicalPath()));
-
-                } catch( IOException ioe ) {
-
+            if(f.isDirectory()) {
+                fileList.addAll(getFiles(f));
+            }
+            else {
+                if (f.getPath().toLowerCase().endsWith(".mp3")){
+                    System.out.println(f.getName());
+                    fileList.add(f.getPath());
                 }
             }
+            return null;
+        }
 
-        } catch (SmbAuthException e) {
-            startActivity(new Intent(this, com.fritzbang.theplayer.SambaLogin.class).putExtra("path", f.getCanonicalPath()));
-        }catch(Exception e){
-            AddListItem(e.toString());
+        @Override
+        public void onProgressUpdate(Integer... ints) {
+            int progressUpdate = ints[0];
+            switch(progressUpdate){
+                case 0:
+                    textViewStatus.setText("Not Connected");
+                    buttonAddTracks.setEnabled(false);
+                    break;
+                case 1:
+                    textViewStatus.setText("Connected");
+                    buttonAddTracks.setEnabled(false);
+                    break;
+                case 2:
+                    textViewStatus.setText("Connected");
+                    buttonAddTracks.setEnabled(true);
+                    textViewNumFilesValue.setText(numberOfFiles);
+                    break;
+            }
         }
     }
-
 }

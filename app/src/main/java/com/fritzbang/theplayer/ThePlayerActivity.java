@@ -88,12 +88,16 @@ public class ThePlayerActivity extends Activity {
     // TODO add album art (musicbrainz.org)
 
     // TODO add functionality to add files to the directory remotely
+    // TODO connect to remote computer
+    // TODO select files randomly
+    // TODO download files
+    // TODO remove user name and password from code add to popup
 
     // TODO add visualization
     // TODO change icons for the app
     // TODO implement the podcast features from DownLow (This will introduce a huge set of TODOs
 
-
+    //TODO add books feature?
 
     //Much later features to add
     // TODO add the chrome cast ability
@@ -764,7 +768,7 @@ public class ThePlayerActivity extends Activity {
     }
 
     private void addNewFiles() {
-        Intent intent = new Intent(this, com.fritzbang.theplayer.PickHost.class);
+        Intent intent = new Intent(this, com.fritzbang.theplayer.SambaExplorer.class);
         startActivity(intent);
     }
 

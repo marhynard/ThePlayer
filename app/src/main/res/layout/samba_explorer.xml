@@ -1,9 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <ListView
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listView" />
-</LinearLayout>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/connected"
+        android:id="@+id/textViewConectedLabel"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/not_connected"
+        android:id="@+id/textViewStatus"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/address"
+        android:id="@+id/textViewAddresLabel"
+        android:layout_below="@+id/textViewConectedLabel"
+        android:layout_alignEnd="@+id/textViewConectedLabel"
+        android:enabled="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textViewAddressValue"
+        android:layout_below="@+id/textViewStatus"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_files"
+        android:id="@+id/buttonAddFiles"
+        android:layout_marginTop="58dp"
+        android:layout_below="@+id/textViewAddressValue"
+        android:layout_alignStart="@+id/textViewStatus"
+        android:enabled="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/number_files"
+        android:id="@+id/textViewNumFilesLabel"
+        android:layout_below="@+id/textViewAddresLabel"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/zero_0"
+        android:id="@+id/textViewNumFilesValue"
+        android:layout_below="@+id/textViewAddresLabel"
+        android:layout_alignEnd="@+id/textViewAddressValue" />
+</RelativeLayout>

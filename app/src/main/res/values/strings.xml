@@ -23,5 +23,11 @@
     <string name="not_played">Mark Not Played</string>
     <string name="action_add">Add</string>
     <string name="submit">Submit</string>
+    <string name="connected">Connected</string>
+    <string name="not_connected">Not Connected</string>
+    <string name="address">Address:</string>
+    <string name="add_files">Add Tracks</string>
+    <string name="number_files">Number Of Files:</string>
+    <string name="zero_0">0</string>
 
 </resources>
