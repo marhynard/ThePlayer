@@ -247,7 +247,7 @@ public class DownloadService extends Service {
                     };
                     mOwner.runOnUiThread(dialogPopup1);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
+
                     e.printStackTrace();
                 }
 

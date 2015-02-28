@@ -31,12 +31,12 @@ public final class R {
         public static final int TAG_FILE_LOCATION=0x7f060002;
         public static final int TAG_FILE_POSITION=0x7f060003;
         public static final int TAG_PLAYLIST_POSITION=0x7f060004;
-        public static final int action_add=0x7f06002e;
-        public static final int action_exit=0x7f06002f;
-        public static final int action_location=0x7f06002c;
-        public static final int action_refresh=0x7f06002a;
-        public static final int action_settings=0x7f06002b;
-        public static final int action_sort=0x7f06002d;
+        public static final int action_add=0x7f060030;
+        public static final int action_exit=0x7f060031;
+        public static final int action_location=0x7f06002e;
+        public static final int action_refresh=0x7f06002c;
+        public static final int action_settings=0x7f06002d;
+        public static final int action_sort=0x7f06002f;
         public static final int address=0x7f06001b;
         public static final int album_image=0x7f06001d;
         public static final int album_title=0x7f06001f;
@@ -49,13 +49,13 @@ public final class R {
         public static final int buttonPrevious=0x7f060008;
         public static final int buttonSubmit=0x7f06001a;
         public static final int checkBox=0x7f060021;
-        public static final int delete=0x7f060027;
+        public static final int delete=0x7f060029;
         public static final int editTextDomain=0x7f060012;
         public static final int editTextPassword=0x7f060015;
         public static final int editTextUserName=0x7f060014;
         public static final int listViewPlaylist=0x7f060011;
-        public static final int not_played=0x7f060029;
-        public static final int played=0x7f060028;
+        public static final int not_played=0x7f06002b;
+        public static final int played=0x7f06002a;
         public static final int seekBar=0x7f06000e;
         public static final int song_title=0x7f06001e;
         public static final int submit=0x7f060018;
@@ -68,6 +68,8 @@ public final class R {
         public static final int textViewConectedLabel=0x7f060022;
         public static final int textViewCurrentTime=0x7f06000d;
         public static final int textViewDomain=0x7f060016;
+        public static final int textViewNumFilesLabel=0x7f060027;
+        public static final int textViewNumFilesValue=0x7f060028;
         public static final int textViewPassword=0x7f060017;
         public static final int textViewSongTitle=0x7f060005;
         public static final int textViewSpace=0x7f060010;
@@ -107,14 +109,16 @@ public final class R {
         public static final int next=0x7f07000f;
         public static final int not_connected=0x7f070010;
         public static final int not_played=0x7f070011;
-        public static final int play=0x7f070012;
-        public static final int played=0x7f070013;
-        public static final int previous=0x7f070014;
-        public static final int rewind=0x7f070015;
-        public static final int song_title=0x7f070016;
-        public static final int space_available=0x7f070017;
-        public static final int submit=0x7f070018;
-        public static final int zero=0x7f070019;
+        public static final int number_files=0x7f070012;
+        public static final int play=0x7f070013;
+        public static final int played=0x7f070014;
+        public static final int previous=0x7f070015;
+        public static final int rewind=0x7f070016;
+        public static final int song_title=0x7f070017;
+        public static final int space_available=0x7f070018;
+        public static final int submit=0x7f070019;
+        public static final int zero=0x7f07001a;
+        public static final int zero_0=0x7f07001b;
     }
     public static final class style {
         /** 

@@ -82,16 +82,15 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio = {"Title", "Album", "Artist", "Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-
-    // TODO organize the songs into folders from where they came(this will be in the copying software) need to read from the folders
+    // TODO need to read from the folders
+    // TODO organize the songs into folders from where they came(this will be in the copying software)
 
     // TODO add album art (musicbrainz.org)
 
     // TODO add functionality to add files to the directory remotely
-    // TODO connect to remote computer
-    // TODO select files randomly
-    // TODO download files
+    // TODO add new files to the database and update view
     // TODO remove user name and password from code add to popup
+    // TODO make sure app doesn't shutdown while copying files
 
     // TODO add visualization
     // TODO change icons for the app
@@ -769,6 +768,7 @@ public class ThePlayerActivity extends Activity {
 
     private void addNewFiles() {
         Intent intent = new Intent(this, com.fritzbang.theplayer.SambaExplorer.class);
+        intent.putExtra("directoryLocation",directoryLocation);
         startActivity(intent);
     }
 
