@@ -84,12 +84,13 @@ public class ThePlayerActivity extends Activity {
 
     // TODO need to read from the folders
     // TODO organize the songs into folders from where they came(this will be in the copying software)
+    // TODO fix the download service
+    // TODO add a progress monitor to the downloads
 
     // TODO add album art (musicbrainz.org)
 
     // TODO add functionality to add files to the directory remotely
     // TODO add new files to the database and update view
-    // TODO remove user name and password from code add to popup
     // TODO make sure app doesn't shutdown while copying files
 
     // TODO add visualization
@@ -767,7 +768,8 @@ public class ThePlayerActivity extends Activity {
     }
 
     private void addNewFiles() {
-        Intent intent = new Intent(this, com.fritzbang.theplayer.SambaExplorer.class);
+        //Intent intent = new Intent(this, com.fritzbang.theplayer.SambaExplorer.class);
+        Intent intent = new Intent(this, com.fritzbang.theplayer.SambaLogin.class);
         intent.putExtra("directoryLocation",directoryLocation);
         startActivity(intent);
     }

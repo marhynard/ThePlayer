@@ -14,14 +14,15 @@ import android.os.Bundle;
 
 public class SambaLogin extends Activity {
     public String share;
+    public String directory;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent i = getIntent();
-        share = i.getStringExtra("share");
-
+        //share = i.getStringExtra("share");
+        directory = i.getStringExtra("directoryLocation");
         setContentView(R.layout.login);
 
         Button btn = (Button)findViewById(R.id.submit);
@@ -33,11 +34,15 @@ public class SambaLogin extends Activity {
                 EditText username = (EditText)findViewById(R.id.editTextUserName);
                 EditText password = (EditText)findViewById(R.id.editTextPassword);
 
-                com.fritzbang.theplayer.DownloadService.ProvideLoginCredentials(domain.toString(), username.toString(), password.toString());
+                //com.fritzbang.theplayer.DownloadService.ProvideLoginCredentials(domain.toString(), username.toString(), password.toString());
 
                 //Intent intent = new Intent(this, com.fritzbang.theplayer.SambaExplorer.class);
                 Intent intent = new Intent(v.getContext(), com.fritzbang.theplayer.SambaExplorer.class);
-                intent.setData(Uri.parse(share));
+                //intent.setData(Uri.parse(share));
+                intent.putExtra("domain",domain.getText().toString());
+                intent.putExtra("username",username.getText().toString());
+                intent.putExtra("password",password.getText().toString());
+                intent.putExtra("directoryLocation",directory);
                 startActivity(intent);
             }
         });

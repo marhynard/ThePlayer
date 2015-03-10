@@ -54,7 +54,12 @@ public class SambaExplorer extends Activity {
     ArrayList<String> downloadList = new ArrayList<>();
     int directoryCount = 0;
     String directoryLocation = "";
-    String baseHostDirectory = "smb://thepoop/prime";
+    //String baseHostDirectory = "smb://thepoop/prime";
+    String baseHostDirectory = "smb://yetanother";
+    String username = "";
+    String password = "";
+    ProgressDialog mDialog;
+    Context context;
 
 
     private static String getIPsubnet(int addr) {
@@ -70,6 +75,10 @@ public class SambaExplorer extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.samba_explorer);
         directoryLocation = getIntent().getStringExtra("directoryLocation");
+        username = getIntent().getStringExtra("username");
+        password = getIntent().getStringExtra("password");
+        baseHostDirectory = getIntent().getStringExtra("domain");
+
 
         textViewStatus = (TextView) findViewById(R.id.textViewStatus);
         buttonAddTracks = (Button) findViewById(R.id.buttonAddFiles);
@@ -113,7 +122,7 @@ public class SambaExplorer extends Activity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG,directoryLocation);
-                new AddTracksTask(directoryLocation).execute();
+                new AddTracksTask(directoryLocation,SambaExplorer.this).execute();
             }
         });
     }
@@ -129,7 +138,7 @@ public class SambaExplorer extends Activity {
 
             try {
                 url = params[0];
-                NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("", "matt", "backyard");
+                NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("", username, password);
                 SmbFile dir = new SmbFile(url, auth);
 
                 if (dir.listFiles().length > 0) {
@@ -197,8 +206,12 @@ public class SambaExplorer extends Activity {
 
     private class AddTracksTask extends AsyncTask<String, Integer, Integer> {
         String directoryLocation = "";
-        public AddTracksTask(String directoryLocation) {
+        public AddTracksTask(String directoryLocation,Context context) {
             this.directoryLocation = directoryLocation;
+            mDialog = new ProgressDialog(context);
+            // Do your dialog stuff here
+            mDialog.setMessage("Finding Files");
+            mDialog.show();
         }
 
         @Override
@@ -206,6 +219,7 @@ public class SambaExplorer extends Activity {
             try {
                 long spaceLeft = (new File(directoryLocation)).getUsableSpace();
                 Random randomGenerator = new Random();
+                downloadList.clear();
                 while(spaceLeft >= 0) {
 
                     //pick file from list
@@ -213,7 +227,7 @@ public class SambaExplorer extends Activity {
                     String fileName = fileList.get(randomInt);
                     fileList.remove(randomInt);
 
-                    NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("", "matt", "backyard");
+                    NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("", username, password);
                     SmbFile fileToCopy = new SmbFile(fileName, auth);
 
                     //TODO check to see if it is on device or in database
@@ -223,26 +237,49 @@ public class SambaExplorer extends Activity {
                     long fileSize = fileToCopy.length();
                     if(fileSize < spaceLeft){
                         if(!isOnDevice(fileName)){
-                            copyFile(fileToCopy);
+                            downloadList.add(fileName);
+
+                            //copyFile(fileToCopy);
 
                             spaceLeft = spaceLeft - fileSize;
+
                         }
                     }
                     if(fileList.isEmpty())
                         spaceLeft = -1;
+
+                    publishProgress(1,fileList.size(),downloadList.size(),(int)spaceLeft);
                 }
+                publishProgress(2);
+                copyFiles();
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (SmbException e) {
-                e.printStackTrace();
-            } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
+        @Override
+        public void onProgressUpdate(Integer... ints) {
+            if(ints[0] == 1) {
+                //mDialog.setProgress(ints[0]);
+                mDialog.setMessage("Files Left: " + ints[1] + "\nNumberFiles: " + ints[2] + "\nSpace Left: " + ints[3]);
+                //textViewSpace.setText(ThePlayerActivity.updateSpaceAvailable(new File(directory)));
+            }else if(ints[0] == 2){
+                mDialog.setMessage("All files found");
+            }
+
+        }
+        public void onPostExecute(Integer result) {
+            mDialog.dismiss();
+        }
+    }
+
+    private void copyFiles() {
+
     }
 
     private void copyFile(SmbFile fileToCopy) throws IOException {
