@@ -14,10 +14,11 @@ public class DeleteTrackTask extends AsyncTask<File, Void, Void> {
     Context context;
     TextView textViewSpace;
     String spaceAvailable = "";
-	public DeleteTrackTask(Context context,TextView textViewSpace) {
+    String directoryLocation;
+	public DeleteTrackTask(Context context,TextView textViewSpace,String directoryLocation) {
         this.context = context;
         this.textViewSpace = textViewSpace;
-
+        this.directoryLocation = directoryLocation;
 	}
 
 	@Override
@@ -53,5 +54,13 @@ public class DeleteTrackTask extends AsyncTask<File, Void, Void> {
 	protected void onPostExecute(String result) {
 
 	}
+
+
+//        list = directory.listFiles(new FilenameFilter() {
+//            public boolean accept(File dir, String name) {
+//                String lowercaseName = name.toLowerCase(Locale.US);
+//                return lowercaseName.endsWith(".mp3");
+//            }
+//        });
 
 }

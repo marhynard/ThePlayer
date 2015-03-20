@@ -60,41 +60,38 @@ public class LoadingTrackTask extends AsyncTask<String, Integer, Integer> {
             Log.d(DEBUG_TAG,
                     "Space: " + directory.getFreeSpace() + " "
                             + directory.getUsableSpace());
-            File[] list = null;
+            ArrayList<File> list = new ArrayList<>();
             if (directory.isDirectory()) {
-                list = directory.listFiles(new FilenameFilter() {
-                    public boolean accept(File dir, String name) {
-                        String lowercaseName = name.toLowerCase(Locale.US);
-                        return lowercaseName.endsWith(".mp3");
-                    }
-                });
+                list.addAll(getFiles(directory));
             }
             Log.d(DEBUG_TAG, directory.getAbsolutePath());
-            if (list != null) {
-                Log.d(DEBUG_TAG, "Got the files " + list.length);
+            if (list.size() > 0) {
+                Log.d(DEBUG_TAG, "Got the files " + list.size());
                 // Toast.makeText(context, "Got the Files: " + list.length,
                 // Toast.LENGTH_SHORT).show();
-                this.listSize = list.length;
+                this.listSize = list.size();
 
                 int numberCores = Runtime.getRuntime().availableProcessors();
 
                 //Get the ThreadFactory implementation to use
                 ThreadFactory threadFactory = Executors.defaultThreadFactory();
                 //creating the ThreadPoolExecutor
-                ThreadPoolExecutor executorPool = new ThreadPoolExecutor(numberCores, numberCores, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(list.length), threadFactory);
+                ThreadPoolExecutor executorPool = new ThreadPoolExecutor(numberCores, numberCores, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(list.size()), threadFactory);
                 for (File file : list) {
                     fileSize += file.length();
-                    if(!dbFiles.contains(file.getPath())) {
+                    if (!dbFiles.contains(file.getPath())) {
                         Runnable worker = new MetaDataRetrieverThread(file);
                         executorPool.execute(worker);
-                    }else{
+                    } else {
                         dbFiles.remove(file.getPath());
                     }
                 }
                 executorPool.shutdown();
-                while (!executorPool.isTerminated()) {}
+                while (!executorPool.isTerminated()) {
+                }
                 Log.d(DEBUG_TAG, "Filessize " + fileSize);
                 Log.d(DEBUG_TAG, "extra in db " + dbFiles.size());
+
             }
             for(String location:dbFiles){
                 dbAdapter.delete(location);
@@ -105,6 +102,21 @@ public class LoadingTrackTask extends AsyncTask<String, Integer, Integer> {
         dbAdapter.close();
         dbAdapter = null;
         return numFiles;
+    }
+    ArrayList<File> getFiles(File directory){
+        ArrayList<File> returnList = new ArrayList<>();
+        File[] files = directory.listFiles();
+        for(File f: files){
+            if(f.isDirectory()){
+                returnList.addAll(getFiles(f));
+            }else{
+                if(f.getName().toLowerCase(Locale.US).endsWith(".mp3")){
+                    Log.d(DEBUG_TAG,"filename: " + f.getName());
+                    returnList.add(f);
+                }
+            }
+        }
+        return returnList;
     }
 
     @Override

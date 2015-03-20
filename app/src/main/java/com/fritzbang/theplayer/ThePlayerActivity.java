@@ -82,7 +82,7 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio = {"Title", "Album", "Artist", "Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-    // TODO need to read from the folders
+    //TODO delete empty folders when deleting files
     // TODO organize the songs into folders from where they came(this will be in the copying software)
     // TODO fix the download service
     // TODO add a progress monitor to the downloads
@@ -430,7 +430,7 @@ public class ThePlayerActivity extends Activity {
 
                                 File file = new File(selectedItem.location);
                                 //File dir = file.getParentFile();
-                                new DeleteTrackTask(context, textViewSpace).execute(file);
+                                new DeleteTrackTask(context, textViewSpace,directoryLocation).execute(file);
                                 currentSongListIndex = plaAdapter.getItem(selectedTrackInfo.location);
                                 //updateSpaceAvailable(dir);
 
@@ -489,7 +489,7 @@ public class ThePlayerActivity extends Activity {
                 //SharedPreferences settings = getPreferences(MODE_PRIVATE);
                 String currentFile = selectedTrackInfo.location;//settings.getString(STATE_TRACK_LOCATION,"none");
                 //currentTrackPosition = settings.getInt(STATE_TRACK_POSITION,0);
-                if (currentFile.equals("none")) {
+                if (currentFile != null && currentFile.equals("none")) {
                     currentSongListIndex = 0;
 
                 } else {
@@ -696,7 +696,7 @@ public class ThePlayerActivity extends Activity {
                         File file = new File(trackToDelete.location);
                         File dir = file.getParentFile();
 
-                        new DeleteTrackTask(context, textViewSpace).execute(file);
+                        new DeleteTrackTask(context, textViewSpace,directoryLocation).execute(file);
                         //updateSpaceAvailable(dir);
 
                     }
