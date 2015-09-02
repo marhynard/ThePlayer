@@ -40,10 +40,12 @@ public class ThePlayerMediaService extends Service implements
     private long currentTime = -1;
     private long startIdleTime = -1;
     private long idleDelay = 600000; //1000mill * 60sec * 10min = 600000
+	private int flag = -1;
 	private static final String DEBUG_TAG = "ThePlayerMediaService";
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		flag = flags;
 		Log.d(DEBUG_TAG,
 				"The flag: " + flags + " " + startId + " " + intent.getAction());
 
@@ -73,10 +75,13 @@ public class ThePlayerMediaService extends Service implements
 	}
 
     private boolean shutdownThePlayerMediaService() {
-        sendMessage(SHUTDOWN_MESSAGE);
+		Log.d(DEBUG_TAG,"shutting down the service");
+		if(flag != SHUTDOWN_MESSAGE) {
+			sendMessage(SHUTDOWN_MESSAGE);
+		}
         idleHandler.removeCallbacks(IdleApplication);
         this.stopForeground(true);
-        this.stop();
+        stopSelf();
         return false;
     }
 
@@ -190,7 +195,7 @@ public class ThePlayerMediaService extends Service implements
 
 	@Override
 	public void onDestroy() {
-		stop();
+		super.onDestroy();//stop();
 	}
 
 	private void stop() {

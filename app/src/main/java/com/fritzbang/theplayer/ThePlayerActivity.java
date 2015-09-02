@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -82,10 +83,12 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio = {"Title", "Album", "Artist", "Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-    //TODO delete empty folders when deleting files
+    // TODO delete empty folders when deleting files
     // TODO organize the songs into folders from where they came(this will be in the copying software)
     // TODO fix the download service
     // TODO add a progress monitor to the downloads
+
+    //TODO add pause and play from the headphones
 
     // TODO add album art (musicbrainz.org)
 
@@ -114,14 +117,15 @@ public class ThePlayerActivity extends Activity {
             ThePlayerMediaService.MyBinder b = (ThePlayerMediaService.MyBinder) binder;
             thePlayerMediaService = b.getService();
             thePlayerMediaService.setHandler(ThePlayerActivity.this.handler);
-            Toast.makeText(ThePlayerActivity.this, "Connected",
+            Toast.makeText(ThePlayerActivity.this, "Connected mConnection",
                     Toast.LENGTH_SHORT).show();
-            Log.d(DEBUG_TAG, "Connected");
+            Log.d(DEBUG_TAG, "Connected mConnection");
 
             if (restoreTrack) {
                 restorePlayer();
             }
         }
+
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
@@ -131,6 +135,7 @@ public class ThePlayerActivity extends Activity {
     };
 
     private boolean mIsBound = false;
+    private boolean isRegistered = false;
 
 
     @Override
@@ -221,6 +226,7 @@ public class ThePlayerActivity extends Activity {
         addPlayList();
 
         registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
+        isRegistered = true;
     }
 
     @Override
@@ -241,17 +247,30 @@ public class ThePlayerActivity extends Activity {
         doBindService();
         // start checking the service again
         if (mIsBound) {
+            //restorePlayer();
+            Log.d(DEBUG_TAG,"mIsBound");
             seekBar.setClickable(true);
-            myHandler.postDelayed(UpdateSongTime, 500);
+            myHandler.postDelayed(UpdateSongTime, 100);
+            if(isPlaying) {
+                Log.d(DEBUG_TAG, "is Playing");
+            }else {
+                Log.d(DEBUG_TAG, "is not Playing");
+            }
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        doUnbindService();
-        unregisterReceiver(myNoisyAudioStreamReceiver);
-        Log.d(DEBUG_TAG, "destroying activity");
+    }
+    private boolean isMyServiceRunning(){
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if(ThePlayerMediaService.class.getName().equals(service.service.getClassName())){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -264,6 +283,7 @@ public class ThePlayerActivity extends Activity {
     }
 
     private void doBindService() {
+        Log.d(DEBUG_TAG, "binding service");
         Intent intent = new Intent(this, ThePlayerMediaService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
@@ -770,7 +790,7 @@ public class ThePlayerActivity extends Activity {
     private void addNewFiles() {
         //Intent intent = new Intent(this, com.fritzbang.theplayer.SambaExplorer.class);
         Intent intent = new Intent(this, com.fritzbang.theplayer.SambaLogin.class);
-        intent.putExtra("directoryLocation",directoryLocation);
+        intent.putExtra("directoryLocation", directoryLocation);
         startActivity(intent);
     }
 
@@ -837,7 +857,7 @@ public class ThePlayerActivity extends Activity {
 
     @Override
     protected void onStop() {
-
+        super.onStop();
         int currpos = saveTrackState();
         if (currentSongListIndex != -1 && this.isFinishing()) {
             updateTrackBeanState(currentSongListIndex, TrackBean.TRACK_STATUS_PARTIAL, currpos);
@@ -847,7 +867,15 @@ public class ThePlayerActivity extends Activity {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("directoryLocation", directoryLocation);
         editor.commit();
-        super.onStop();
+        //doUnbindService();
+        if(isRegistered) {
+            unregisterReceiver(myNoisyAudioStreamReceiver);
+            isRegistered = false;
+        }/*
+        Log.d(DEBUG_TAG, "destroying activity");
+        Log.d(DEBUG_TAG, "stopped " + isMyServiceRunning());
+        Log.d(DEBUG_TAG, "service stopped");*/
+
     }
 
     private OnSeekBarChangeListener seekBarChangeListener = new OnSeekBarChangeListener() {
@@ -908,6 +936,7 @@ public class ThePlayerActivity extends Activity {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 // Pause the playback
                 if (isPlaying) {
+                    Log.d(DEBUG_TAG,"Pausing playback");
                     play(null);
                 }
             }
@@ -923,23 +952,33 @@ public class ThePlayerActivity extends Activity {
             switch (focusChange) {
 
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    Log.d(DEBUG_TAG,"Audiofocus_loss_transient");
                     streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,0,AudioManager.AUDIOFOCUS_LOSS_TRANSIENT);
-                    if (isPlaying)
-                        play(null);
+                    //if (isPlaying)
+                    //    play(null);
                     break;
                 case AudioManager.AUDIOFOCUS_GAIN:
-                // Resume playback
-                    play(null);
+                    Log.d(DEBUG_TAG,"Audiofocus_gain");
+                    // Resume playback
+                    //only resume playback if it is playing
+                    if(!isPlaying){
+                        Log.d(DEBUG_TAG,"it is not playing ignoring");
+                    }else {
+                        Log.d(DEBUG_TAG,"it is playing pausing");
+                        //play(null);
+                    }
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,streamVolume,AudioManager.AUDIOFOCUS_GAIN);
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
+                    Log.d(DEBUG_TAG,"Audiofocus_loss");
                     streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,0,AudioManager.AUDIOFOCUS_LOSS);
                     if (isPlaying)
                         play(null);
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    Log.d(DEBUG_TAG,"Audiofocus_loss_transient_can_duck");
                     streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,0,AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK);
                     break;
@@ -951,8 +990,11 @@ public class ThePlayerActivity extends Activity {
      * Stops the Application
      */
     private void stopApplication() {
+
+        thePlayerMediaService.pause();
         thePlayerMediaService.stopForeground(true);
         doUnbindService();
+        //stopService(new Intent(this, ThePlayerMediaService.class));//.setAction("shutdown"),ThePlayerMediaService.SHUTDOWN_MESSAGE,0);
         updateDatabase();
         this.finish();
     }
