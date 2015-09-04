@@ -83,12 +83,14 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio = {"Title", "Album", "Artist", "Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
+    // TODO standardize the lists between the Podcasts and Music tracks
+    // TODO when loading the playlist load the correct files either podcasts,music, or both
     // TODO delete empty folders when deleting files
     // TODO organize the songs into folders from where they came(this will be in the copying software)
     // TODO fix the download service
     // TODO add a progress monitor to the downloads
 
-    //TODO add pause and play from the headphones
+    // TODO add pause and play from the headphones
 
     // TODO add album art (musicbrainz.org)
 
@@ -98,9 +100,20 @@ public class ThePlayerActivity extends Activity {
 
     // TODO add visualization
     // TODO change icons for the app
-    // TODO implement the podcast features from DownLow (This will introduce a huge set of TODOs
+    // TODO go through activities and code added and integrate Podcast functionality into theplayer
+    // TODO activity for listing the podcast channels
+    // TODO activity for listing the Available Episodes (highlighted and shaded for status)
+    // TODO activity for listing the downloaded and status of them
+    // TODO activity for subscribing to podcasts
+    // TODO importing podcasts from opml
+    // TODO finding podcasts
+    // TODO recomendations
+    // TODO check out gpodder service for searching for podcasts
+    // TODO create activity to clear the rss feed cache
+    // TODO create a settings menu
+    // TODO add toggle to display podcasts with music
 
-    //TODO add books feature?
+    // TODO add books feature?
 
     //Much later features to add
     // TODO add the chrome cast ability
@@ -765,6 +778,7 @@ public class ThePlayerActivity extends Activity {
         switch (item.getItemId()) {
 
             case R.id.action_settings:
+                openSettingsMenu();
                 return true;
             case R.id.action_location:
                 showLocationSelection();
@@ -778,6 +792,9 @@ public class ThePlayerActivity extends Activity {
             case R.id.action_add:
                 addNewFiles();
                 return true;
+            case R.id.action_podcast:
+                handlePodcasts();
+                return true;
             case R.id.action_refresh:
                 refreshDatabase();
                 return true;
@@ -785,6 +802,17 @@ public class ThePlayerActivity extends Activity {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    private void openSettingsMenu() {
+        Log.d(DEBUG_TAG,"opening settings");
+        Intent intent = new Intent(this,com.fritzbang.theplayer.SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void handlePodcasts() {
+        //Intent intent = new Intent(this,com.fritzbang.theplayer.PodcastActivity.class);
+        //startActivity(intent);
     }
 
     private void addNewFiles() {

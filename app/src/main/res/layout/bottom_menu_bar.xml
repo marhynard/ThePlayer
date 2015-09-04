@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/buttonChannels"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Channels" />
+
+    <Button
+        android:id="@+id/buttonNew"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="66dp"
+        android:layout_height="wrap_content"
+        android:text="New" />
+
+    <Button
+        android:id="@+id/buttonPlayer"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player" />
+
+    <Button
+        android:id="@+id/buttonDownloads"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="108dp"
+        android:layout_height="wrap_content"
+        android:text="Downloads" />
+
+</LinearLayout>

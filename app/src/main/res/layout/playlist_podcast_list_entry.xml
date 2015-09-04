@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/completed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/podcast_title"
+        android:layout_alignBottom="@+id/podcast_title"
+        android:layout_alignParentRight="true" />
+
+    <TextView
+        android:id="@+id/in_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/podcast_title"
+        android:layout_toRightOf="@+id/podcast_title"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/podcast_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/podcast_episode_title"
+        android:text="Podcast Title" />
+
+    <TextView
+        android:id="@+id/playing_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="%played" />
+
+    <TextView
+        android:id="@+id/podcast_episode_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/podcast_title"
+        android:layout_below="@+id/playing_percent"
+        android:text="Episode Title" />
+
+</RelativeLayout>

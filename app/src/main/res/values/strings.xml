@@ -29,5 +29,6 @@
     <string name="add_files">Add Tracks</string>
     <string name="number_files">Number Of Files:</string>
     <string name="zero_0">0</string>
+    <string name="action_podcast">Podcasts</string>
 
 </resources>
