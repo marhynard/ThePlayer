@@ -83,6 +83,7 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio = {"Title", "Album", "Artist", "Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
+    // TODO update the files system within the app to have a podcast location and music location and book location
     // TODO standardize the lists between the Podcasts and Music tracks
     // TODO when loading the playlist load the correct files either podcasts,music, or both
     // TODO delete empty folders when deleting files
@@ -811,8 +812,8 @@ public class ThePlayerActivity extends Activity {
     }
 
     private void handlePodcasts() {
-        //Intent intent = new Intent(this,com.fritzbang.theplayer.PodcastActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this,com.fritzbang.theplayer.MainDownLowActivity.class);
+        startActivity(intent);
     }
 
     private void addNewFiles() {

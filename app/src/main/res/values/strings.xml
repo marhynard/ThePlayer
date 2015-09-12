@@ -30,5 +30,6 @@
     <string name="number_files">Number Of Files:</string>
     <string name="zero_0">0</string>
     <string name="action_podcast">Podcasts</string>
+    <string name="action_refresh">Refresh</string>
 
 </resources>

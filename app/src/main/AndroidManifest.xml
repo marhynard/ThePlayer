@@ -43,7 +43,15 @@
         <activity
             android:name="com.fritzbang.theplayer.SambaLogin" >
         </activity>
-
+        <activity
+            android:name="com.fritzbang.theplayer.MainDownLowActivity" >
+        </activity>
+        <activity
+            android:name="com.fritzbang.theplayer.ChannelActivity" >
+        </activity>
+        <activity
+            android:name="com.fritzbang.theplayer.NewActivity" >
+        </activity>
         <service
             android:enabled="true"
             android:name=".ThePlayerMediaService"
