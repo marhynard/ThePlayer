@@ -16,12 +16,14 @@ public class DBAdapter {
 	private static final String DEBUG_TAG = "DBAdapter";
 
 	// These are the columns of the track_info table
-    public static final String KEY_TRACK_LOCATION = "track_location";
-    public static final String KEY_TRACK_TITLE = "track_title";
-    public static final String KEY_TRACK_ARTIST = "track_artist";
-    public static final String KEY_TRACK_ALBUM = "track_album";
-    public static final String KEY_TRACK_STATUS = "track_status";// finished playing - partial played - currently playing - not played
-    public static final String KEY_TRACK_POSITION = "track_position"; //current position for the track - possibly 0 if not played -1 if finished
+    public static final String KEY_TRACK_LOCATION       = "track_location";
+    public static final String KEY_TRACK_TITLE          = "track_title";
+    public static final String KEY_TRACK_ARTIST         = "track_artist";
+    public static final String KEY_TRACK_ALBUM          = "track_album";
+    public static final String KEY_TRACK_STATUS         = "track_status";// finished playing - partial played - currently playing - not played
+    public static final String KEY_TRACK_POSITION       = "track_position"; //current position for the track - possibly 0 if not played -1 if finished
+    public static final String KEY_TRACK_TIMES_PLAYED   = "track_times_played"; //number of times the track has been played
+    public static final String KEY_TRACK_RATING         = "track_rating"; //rating of the track 0-5 0=not rated 5 best
 
 	public static final String TAG = "DBAdapter";
 	public static final String DATABASE_NAME = "player";
@@ -29,12 +31,13 @@ public class DBAdapter {
 	// table names
 	public static final String DATABASE_TABLE_TRACK_INFO = "track_info";
 
-	public static final int DATABASE_VERSION = 2;
+	public static final int DATABASE_VERSION = 3;
 
 	// Table creation statements
 	public static final String CREATE_TRACK_INFO_DATABASE = "create table " + DATABASE_TABLE_TRACK_INFO + " ( "
         + KEY_TRACK_LOCATION + " text unique, " + KEY_TRACK_TITLE + " text, " + KEY_TRACK_ARTIST + " text, "
-            + KEY_TRACK_ALBUM + " text, " + KEY_TRACK_STATUS + " int, " + KEY_TRACK_POSITION + " int);";
+            + KEY_TRACK_ALBUM + " text, " + KEY_TRACK_STATUS + " int, " + KEY_TRACK_POSITION + " int, "
+            + KEY_TRACK_TIMES_PLAYED + " int default 0, " + KEY_TRACK_RATING + " int default 0" +");";
 
 	// Gets all information from table
 	private final String TRACK_INFO_QUERY = "SELECT * FROM " + DATABASE_TABLE_TRACK_INFO;

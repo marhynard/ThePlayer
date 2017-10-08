@@ -83,27 +83,47 @@ public class ThePlayerActivity extends Activity {
     final CharSequence[] sortType_radio = {"Title", "Album", "Artist", "Track"};
     NoisyAudioStreamReceiver myNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
 
-    // TODO delete empty folders when deleting files
+    // TODO capture log files to examine the problems happening
     // TODO organize the songs into folders from where they came(this will be in the copying software)
-    // TODO fix the download service
+    // TODO delete empty folders when deleting files
+    // TODO fix the download service (need to specify what "fix" means)
     // TODO add a progress monitor to the downloads
+    // TODO speed up the initialization
 
-    //TODO add pause and play from the headphones
+    // TODO add pause and play from the headphones
+    // TODO fix the issue of it disabling the map direction sounds when connected to bluetooth(not sure if happens only when connected)
+    // TODO: 4/30/2017 should pause music when a call comes in and resume when call ends
 
+    // TODO add the bluetooth controls
+    // TODO refactor ThePlayerActivity to make it more managable
+    // TODO add error handling for tracks that have issues
+
+    // TODO should pause when notifications come in.
+    // TODO add multi speed playback
     // TODO add album art (musicbrainz.org)
 
     // TODO add functionality to add files to the directory remotely
     // TODO add new files to the database and update view
     // TODO make sure app doesn't shutdown while copying files
+    // TODO clean up before it shutsdown.
+    // TODO when crashes ensure clean crash? tough // TODO: 4/30/2017
+    // TODO: 4/30/2017 add ability to remove from playlist after played
+
+    // TODO add the ability to rank tracks
+    // TODO keep track of the number of times a track has been played
+    // TODO play by popularity or rating
+    // TODO create a playlist
+    // TODO edit and clean up the meta data associated with a track
 
     // TODO add visualization
     // TODO change icons for the app
-    // TODO implement the podcast features from DownLow (This will introduce a huge set of TODOs
 
-    //TODO add books feature?
+    // TODO implement the podcast features from DownLow (This will introduce a huge set of TODOs
+    // TODO: 4/30/2017 redesign layout for downlow
+    // TODO add books feature? ( this is probably reading the tags correctly)
 
     //Much later features to add
-    // TODO add the chrome cast ability
+    // TODO add the chrome cast ability (streaming)
     // TODO figure out the proper way to manage other files(bypass the Android 5 requirement to use app-directory)
     // TODO remove the debugging messages
 

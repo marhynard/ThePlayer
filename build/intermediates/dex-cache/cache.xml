@@ -2,39 +2,32 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\mrhynard\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-d83df5fbec4de668081e1fb27186a4b46f1c8cac.jar" />
-    </item>
-    <item
-        jar="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\libs\jcifs-1.3.18.jar"
-        jumboMode="false"
+        jar="C:\Users\matt\StudioProjects\ThePlayer\app\libs\jcifs-1.3.18.jar"
+        jumboMode="true"
         revision="21.1.2"
         sha1="29d62325100eac2bb3c25b44434acdc4d698c401">
-        <dex dex="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\build\intermediates\pre-dexed\debug\jcifs-1.3.18-14d6605ec50ed763c1d4423536f280fd3ccd77e1.jar" />
+        <dex dex="C:\Users\matt\StudioProjects\ThePlayer\app\build\intermediates\transforms\dex\debug\folders\1000\2\jcifs-1.3.18_88c07cec4d5d1f82fafdd8cc95572f609c809196\classes.dex" />
     </item>
     <item
-        jar="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\jars\libs\internal_impl-21.0.3.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-385fc27e2a63911a43130c361b4f9ec23335a4d5.jar" />
-    </item>
-    <item
-        jar="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\jars\classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\build\intermediates\pre-dexed\debug\classes-4b6c4a9e8260fe717119c9fe14475b869ae221cb.jar" />
-    </item>
-    <item
-        jar="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\libs\jid3lib-0.5.4.jar"
-        jumboMode="false"
+        jar="C:\Users\matt\StudioProjects\ThePlayer\app\libs\jid3lib-0.5.4.jar"
+        jumboMode="true"
         revision="21.1.2"
         sha1="f775df25dc9973006552b3c4e897e652be84c48d">
-        <dex dex="C:\Users\mrhynard\AndroidProjects\ThePlayer\app\build\intermediates\pre-dexed\debug\jid3lib-0.5.4-71a2d14837f389cf340a8628ca5bd98fa1ac2d4f.jar" />
+        <dex dex="C:\Users\matt\StudioProjects\ThePlayer\app\build\intermediates\transforms\dex\debug\folders\1000\2\jid3lib-0.5.4_c42cecb6970ae6e270eb337de587cdea7b925c35\classes.dex" />
+    </item>
+    <item
+        jar="C:\Users\matt\StudioProjects\ThePlayer\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="e1ec2d394a7c6e0e7db1b5e8f4279060e8619e18">
+        <dex dex="C:\Users\matt\StudioProjects\ThePlayer\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_eb6bf5b8c73977b035bb55b42d31fe596a9ef683\classes.dex" />
+    </item>
+    <item
+        jar="C:\Users\matt\StudioProjects\ThePlayer\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="21.1.2"
+        sha1="df107f0b2194ddd8268c9af71915ea2aa80aec34">
+        <dex dex="C:\Users\matt\StudioProjects\ThePlayer\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_b0b8b0baf40c64138bd61df0f01bb707f8a427c0\classes.dex" />
     </item>
 
 </items>

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.fritzbang.theplayer"
         minSdkVersion 18
-        targetSdkVersion 19
+        targetSdkVersion 23
     }
 
     buildTypes {
@@ -19,7 +19,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.3'
     compile files('libs/jid3lib-0.5.4.jar')
     compile files('libs/jcifs-1.3.18.jar')
 }
